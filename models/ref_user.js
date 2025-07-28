@@ -6,8 +6,17 @@ const table = 'tbl_users';
 
 export async function selectAll() {
   const { kode_opd, level } = await getSession();
+
+  const queryStr = [
+    '',
+    'WHERE level >=1',
+    'WHERE kode_opd=?',
+    'WHERE level = -1',
+    'WHERE level = -1',
+  ];
+
   const sql = await query({
-    query: `SELECT * FROM v_users ${level <= 1 ? '' : 'WHERE kode_opd=?'}`,
+    query: `SELECT * FROM v_users  ${queryStr[level]}`,
     values: [kode_opd],
   });
   return sql;
@@ -34,7 +43,6 @@ export async function selectByColumns(columns, value, limit = null) {
     values = [];
   }
 
-  console.log(level);
   if (level > 1) {
     sqlQuery += ` AND kode_opd=?`;
     values.push(kode_opd);
@@ -54,7 +62,6 @@ export async function selectByColumns(columns, value, limit = null) {
 }
 
 export async function insert(data) {
-  console.log(data);
   const sql = await query({
     query: `INSERT INTO ${table} VALUES(?,?,?,?,?,?,?,?,?)`,
     values: data,

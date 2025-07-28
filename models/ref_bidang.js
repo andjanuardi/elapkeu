@@ -46,7 +46,7 @@ export async function selectByColumns(columns, value, limit = null) {
 
 export async function insert(data) {
   const sql = await query({
-    query: `INSERT INTO ${table} VALUES(?)`,
+    query: `INSERT INTO ${table} VALUES(?,?)`,
     values: data,
   });
   return sql;
@@ -54,7 +54,7 @@ export async function insert(data) {
 
 export async function update(data) {
   const sql = await query({
-    query: `UPDATE ${table} SET bidang=? WHERE bidang=?`,
+    query: `UPDATE ${table} SET kode=?, bidang=? WHERE kode=?`,
     values: data,
   });
   return sql;
@@ -62,7 +62,7 @@ export async function update(data) {
 
 export async function del(data) {
   const sql = await query({
-    query: `DELETE FROM ${table} WHERE bidang=?`,
+    query: `DELETE FROM ${table} WHERE kode=?`,
     values: data,
   });
   return sql;

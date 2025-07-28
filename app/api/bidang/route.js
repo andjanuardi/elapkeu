@@ -34,7 +34,7 @@ export async function POST(request) {
         await del(data);
         break;
       case 'cari':
-        sql = await selectByColl('bidang', data);
+        sql = await selectByColl('kode', data);
         break;
 
       case 'carisemua':

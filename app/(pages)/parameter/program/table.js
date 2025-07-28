@@ -10,18 +10,18 @@ export default function TableData() {
   const [row, setRow] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const coll = [{ label: 'kode' }, { label: 'Bidang', className: 'w-full' }];
+  const coll = [{ label: 'kode' }, { label: 'Program', className: 'w-full' }];
 
   const getData = useCallback(async () => {
-    const { data } = await fetchData('/api/bidang');
-    const rowData = data.map((item) => [item.kode, item.bidang]);
+    const { data } = await fetchData('/api/program');
+    const rowData = data.map((item) => [item.kode, item.program]);
     setRow(rowData);
     setLoading(false);
   }, []);
 
   async function hapus(id) {
     SwalLoading('Menghapus data...');
-    await fetchData('/api/bidang', 'POST', { a: 'hapus', data: id }).then(
+    await fetchData('/api/program', 'POST', { a: 'hapus', data: id }).then(
       () => {
         SwalSuccess(() => getData(), 'Data berhasil di hapus');
       }

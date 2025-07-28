@@ -3,8 +3,9 @@ import {
   insert,
   selectAll,
   selectByColl,
+  selectByColumns,
   update,
-} from "@/models/ref_satuan";
+} from '@/models/ref_satuan';
 
 export async function GET() {
   try {
@@ -20,23 +21,26 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { a, data } = await request.json();
+    const { a, data, limit } = await request.json();
     let sql = [];
     switch (a) {
-      case "tambah":
+      case 'tambah':
         await insert(data);
         break;
-      case "ubah":
+      case 'ubah':
         await update(data);
         break;
-      case "hapus":
+      case 'hapus':
         await del(data);
         break;
-      case "cari":
-        sql = await selectByColl("satuan", data);
+      case 'cari':
+        sql = await selectByColl('satuan', data);
+        break;
+      case 'carisemua':
+        sql = await selectByColumns(['satuan'], data, limit);
         break;
       default:
-        sql = "error";
+        sql = 'error';
         break;
     }
     return Response.json({ status: true, data: sql });

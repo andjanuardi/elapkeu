@@ -43,187 +43,8 @@ export const menu = [
       },
       {
         logo: <FcTimeline />,
-        label: 'Daftar Kegiatan',
-        link: '/parameter/kegiatan',
-      },
-      {
-        logo: <FcTimeline />,
-        label: 'Daftar Sub Kegiatan',
-        link: '/parameter/subkegiatan',
-      },
-      {
-        logo: <FcDisplay />,
-        label: 'Daftar Satuan',
-        link: '/parameter/satuan',
-      },
-    ],
-    open: false,
-  },
-  {
-    label: 'Data Transaksi',
-    logo: <FcStatistics />,
-    child: [
-      {
-        logo: <FcBullish />,
-        label: 'Data Realisasi',
-        link: '/transaksi/realisasi',
-      },
-    ],
-    open: true,
-  },
-  {
-    logo: <FcPrint />,
-    label: 'Laporan',
-    child: [
-      {
-        logo: <FcRatings />,
-        label: 'Laporan Rincian',
-        link: '/laporan/rincian',
-      },
-      {
-        logo: <FcDocument />,
-        label: 'Laporan Per Tahap',
-        link: '/laporan/tahap',
-      },
-    ],
-    open: true,
-  },
-  {
-    logo: <FcSettings />,
-    label: 'Pengaturan',
-    child: [
-      {
-        logo: <FcPortraitMode />,
-        label: 'Pengaturan Pengguna',
-        link: '/pengaturan/pengguna',
-      },
-      // {
-      //   logo: <FcOvertime />,
-      //   label: 'Pengaturan Batas Waktu',
-      //   link: '/pengaturan-waktu',
-      // },
-      // {
-      //   logo: <FcSettings />,
-      //   label: 'Pengaturan Lainnya',
-      //   link: '/pengaturan-lain',
-      // },
-    ],
-    open: true,
-  },
-];
-
-export const menuSuperAdmin = [
-  {
-    label: 'Beranda',
-    link: '/',
-    logo: <FcHome />,
-  },
-  // {
-  //   label: 'Parameter',
-  //   logo: <FcMindMap />,
-  //   child: [
-  //     { logo: <FcDepartment />, label: 'Daftar OPD', link: '/parameter/opd' },
-  //     {
-  //       logo: <FcBusinessman />,
-  //       label: 'Daftar Pejabat',
-  //       link: '/parameter/pejabat',
-  //     },
-  //     {
-  //       logo: <FcTimeline />,
-  //       label: 'Daftar Bidang',
-  //       link: '/parameter/bidang',
-  //     },
-  //     {
-  //       logo: <FcTimeline />,
-  //       label: 'Daftar Kegiatan',
-  //       link: '/parameter/kegiatan',
-  //     },
-  //     {
-  //       logo: <FcTimeline />,
-  //       label: 'Daftar Sub Kegiatan',
-  //       link: '/parameter/subkegiatan',
-  //     },
-  //     {
-  //       logo: <FcDisplay />,
-  //       label: 'Daftar Satuan',
-  //       link: '/parameter/satuan',
-  //     },
-  //   ],
-  //   open: false,
-  // },
-  // {
-  //   label: 'Data Transaksi',
-  //   logo: <FcStatistics />,
-  //   child: [
-  //     {
-  //       logo: <FcBullish />,
-  //       label: 'Data Realisasi',
-  //       link: '/transaksi/realisasi',
-  //     },
-  //   ],
-  //   open: true,
-  // },
-  {
-    logo: <FcPrint />,
-    label: 'Laporan',
-    child: [
-      {
-        logo: <FcRatings />,
-        label: 'Laporan Rincian',
-        link: '/laporan/rincian',
-      },
-      {
-        logo: <FcDocument />,
-        label: 'Laporan Per Tahap',
-        link: '/laporan/tahap',
-      },
-    ],
-    open: true,
-  },
-  {
-    logo: <FcSettings />,
-    label: 'Pengaturan',
-    child: [
-      {
-        logo: <FcPortraitMode />,
-        label: 'Pengaturan Pengguna',
-        link: '/pengaturan/pengguna',
-      },
-      // {
-      //   logo: <FcOvertime />,
-      //   label: 'Pengaturan Batas Waktu',
-      //   link: '/pengaturan-waktu',
-      // },
-      // {
-      //   logo: <FcSettings />,
-      //   label: 'Pengaturan Lainnya',
-      //   link: '/pengaturan-lain',
-      // },
-    ],
-    open: true,
-  },
-];
-
-export const menuAdministrator = [
-  {
-    label: 'Beranda',
-    link: '/',
-    logo: <FcHome />,
-  },
-  {
-    label: 'Parameter',
-    logo: <FcMindMap />,
-    child: [
-      { logo: <FcDepartment />, label: 'Daftar OPD', link: '/parameter/opd' },
-      {
-        logo: <FcBusinessman />,
-        label: 'Daftar Pejabat',
-        link: '/parameter/pejabat',
-      },
-      {
-        logo: <FcTimeline />,
-        label: 'Daftar Bidang',
-        link: '/parameter/bidang',
+        label: 'Daftar Progam',
+        link: '/parameter/program',
       },
       {
         logo: <FcTimeline />,
@@ -296,289 +117,40 @@ export const menuAdministrator = [
   },
 ];
 
-export const menuAdminOPD = [
+const menuSuperAdmin = [menu[0], menu[3], menu[4]];
+
+const menuAdministrator = [menu[0], menu[1], menu[2], menu[3], menu[4]];
+
+const menuAdminOPD = [
+  menu[0],
   {
-    label: 'Beranda',
-    link: '/',
-    logo: <FcHome />,
+    ...menu[1],
+    child: [menu[1].child[1]],
   },
-  {
-    label: 'Parameter',
-    logo: <FcMindMap />,
-    child: [
-      // { logo: <FcDepartment />, label: 'Daftar OPD', link: '/parameter/opd' },
-      {
-        logo: <FcBusinessman />,
-        label: 'Daftar Pejabat',
-        link: '/parameter/pejabat',
-      },
-      // {
-      //   logo: <FcTimeline />,
-      //   label: 'Daftar Bidang',
-      //   link: '/parameter/bidang',
-      // },
-      // {
-      //   logo: <FcTimeline />,
-      //   label: 'Daftar Kegiatan',
-      //   link: '/parameter/kegiatan',
-      // },
-      // {
-      //   logo: <FcTimeline />,
-      //   label: 'Daftar Sub Kegiatan',
-      //   link: '/parameter/subkegiatan',
-      // },
-      // {
-      //   logo: <FcDisplay />,
-      //   label: 'Daftar Satuan',
-      //   link: '/parameter/satuan',
-      // },
-    ],
-    open: false,
-  },
-  {
-    label: 'Data Transaksi',
-    logo: <FcStatistics />,
-    child: [
-      {
-        logo: <FcBullish />,
-        label: 'Data Realisasi',
-        link: '/transaksi/realisasi',
-      },
-    ],
-    open: true,
-  },
-  {
-    logo: <FcPrint />,
-    label: 'Laporan',
-    child: [
-      {
-        logo: <FcRatings />,
-        label: 'Laporan Rincian',
-        link: '/laporan/rincian',
-      },
-      {
-        logo: <FcDocument />,
-        label: 'Laporan Per Tahap',
-        link: '/laporan/tahap',
-      },
-    ],
-    open: true,
-  },
-  {
-    logo: <FcSettings />,
-    label: 'Pengaturan',
-    child: [
-      {
-        logo: <FcPortraitMode />,
-        label: 'Pengaturan Pengguna',
-        link: '/pengaturan/pengguna',
-      },
-      // {
-      //   logo: <FcOvertime />,
-      //   label: 'Pengaturan Batas Waktu',
-      //   link: '/pengaturan-waktu',
-      // },
-      // {
-      //   logo: <FcSettings />,
-      //   label: 'Pengaturan Lainnya',
-      //   link: '/pengaturan-lain',
-      // },
-    ],
-    open: true,
-  },
+  ,
+  menu[2],
+  menu[3],
+  menu[4],
 ];
 
-export const menuOperatorOPD = [
+const menuOperatorOPD = [
+  menu[0],
   {
-    label: 'Beranda',
-    link: '/',
-    logo: <FcHome />,
+    ...menu[1],
+    child: [menu[1].child[1]],
   },
-  {
-    label: 'Parameter',
-    logo: <FcMindMap />,
-    child: [
-      // { logo: <FcDepartment />, label: 'Daftar OPD', link: '/parameter/opd' },
-      {
-        logo: <FcBusinessman />,
-        label: 'Daftar Pejabat',
-        link: '/parameter/pejabat',
-      },
-      // {
-      //   logo: <FcTimeline />,
-      //   label: 'Daftar Bidang',
-      //   link: '/parameter/bidang',
-      // },
-      // {
-      //   logo: <FcTimeline />,
-      //   label: 'Daftar Kegiatan',
-      //   link: '/parameter/kegiatan',
-      // },
-      // {
-      //   logo: <FcTimeline />,
-      //   label: 'Daftar Sub Kegiatan',
-      //   link: '/parameter/subkegiatan',
-      // },
-      // {
-      //   logo: <FcDisplay />,
-      //   label: 'Daftar Satuan',
-      //   link: '/parameter/satuan',
-      // },
-    ],
-    open: false,
-  },
-  {
-    label: 'Data Transaksi',
-    logo: <FcStatistics />,
-    child: [
-      {
-        logo: <FcBullish />,
-        label: 'Data Realisasi',
-        link: '/transaksi/realisasi',
-      },
-    ],
-    open: true,
-  },
-  {
-    logo: <FcPrint />,
-    label: 'Laporan',
-    child: [
-      {
-        logo: <FcRatings />,
-        label: 'Laporan Rincian',
-        link: '/laporan/rincian',
-      },
-      {
-        logo: <FcDocument />,
-        label: 'Laporan Per Tahap',
-        link: '/laporan/tahap',
-      },
-    ],
-    open: true,
-  },
-  // {
-  //   logo: <FcSettings />,
-  //   label: 'Pengaturan',
-  //   child: [
-  //     {
-  //       logo: <FcPortraitMode />,
-  //       label: 'Pengaturan Pengguna',
-  //       link: '/pengaturan/pengguna',
-  //     },
-  //     // {
-  //     //   logo: <FcOvertime />,
-  //     //   label: 'Pengaturan Batas Waktu',
-  //     //   link: '/pengaturan-waktu',
-  //     // },
-  //     // {
-  //     //   logo: <FcSettings />,
-  //     //   label: 'Pengaturan Lainnya',
-  //     //   link: '/pengaturan-lain',
-  //     // },
-  //   ],
-  //   open: true,
-  // },
+  ,
+  menu[2],
+  menu[3],
 ];
 
-export const menuVerifikator = [
-  {
-    label: 'Beranda',
-    link: '/',
-    logo: <FcHome />,
-  },
-  // {
-  //   label: 'Parameter',
-  //   logo: <FcMindMap />,
-  //   child: [
-  //     { logo: <FcDepartment />, label: 'Daftar OPD', link: '/parameter/opd' },
-  //     {
-  //       logo: <FcBusinessman />,
-  //       label: 'Daftar Pejabat',
-  //       link: '/parameter/pejabat',
-  //     },
-  //     {
-  //       logo: <FcTimeline />,
-  //       label: 'Daftar Bidang',
-  //       link: '/parameter/bidang',
-  //     },
-  //     {
-  //       logo: <FcTimeline />,
-  //       label: 'Daftar Kegiatan',
-  //       link: '/parameter/kegiatan',
-  //     },
-  //     {
-  //       logo: <FcTimeline />,
-  //       label: 'Daftar Sub Kegiatan',
-  //       link: '/parameter/subkegiatan',
-  //     },
-  //     {
-  //       logo: <FcDisplay />,
-  //       label: 'Daftar Satuan',
-  //       link: '/parameter/satuan',
-  //     },
-  //   ],
-  //   open: false,
-  // },
-  // {
-  //   label: 'Data Transaksi',
-  //   logo: <FcStatistics />,
-  //   child: [
-  //     {
-  //       logo: <FcBullish />,
-  //       label: 'Data Realisasi',
-  //       link: '/transaksi/realisasi',
-  //     },
-  //   ],
-  //   open: true,
-  // },
-  {
-    logo: <FcPrint />,
-    label: 'Laporan',
-    child: [
-      {
-        logo: <FcRatings />,
-        label: 'Laporan Rincian',
-        link: '/laporan/rincian',
-      },
-      {
-        logo: <FcDocument />,
-        label: 'Laporan Per Tahap',
-        link: '/laporan/tahap',
-      },
-    ],
-    open: true,
-  },
-  // {
-  //   logo: <FcSettings />,
-  //   label: 'Pengaturan',
-  //   child: [
-  //     {
-  //       logo: <FcPortraitMode />,
-  //       label: 'Pengaturan Pengguna',
-  //       link: '/pengaturan/pengguna',
-  //     },
-  //     // {
-  //     //   logo: <FcOvertime />,
-  //     //   label: 'Pengaturan Batas Waktu',
-  //     //   link: '/pengaturan-waktu',
-  //     // },
-  //     // {
-  //     //   logo: <FcSettings />,
-  //     //   label: 'Pengaturan Lainnya',
-  //     //   link: '/pengaturan-lain',
-  //     // },
-  //   ],
-  //   open: true,
-  // },
-];
+const menuVerifikator = [menu[0], menu[3]];
 
-const menus = [
+export const menuByLevel = [
   menuSuperAdmin,
   menuAdministrator,
   menuAdminOPD,
   menuOperatorOPD,
-  menuVerifikator,
-  menuVerifikator,
   menuVerifikator,
 ];
 
@@ -588,7 +160,7 @@ export default async function Menu() {
     <div className=" bg-base-200 inset-shadow-sm h-full flex flex-col ">
       <input id="menu-drawer" className="hidden" type="checkbox" />
       <ul className="menu  text-base-content  w-full flex-1 py-4  ">
-        {menus[level].map((item, key) => (
+        {menuByLevel[level].map((item, key) => (
           <li key={key}>
             {item.child && (
               <details open={item.open}>

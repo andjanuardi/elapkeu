@@ -10,7 +10,7 @@ export function UserButton({ session = {} }) {
   return (
     <div className="dropdown dropdown-end ">
       <div tabIndex={0} role="button" className="btn btn-ghost ">
-        <div className="text-right flex flex-col leading-3 ">
+        <div className="text-right hidden lg:flex flex-col leading-3  ">
           <div>{session.nama}</div>
           <div className="text-neutral-500 text-xs">
             {levelLabel[session?.level]}
@@ -38,13 +38,29 @@ export function MenuButton() {
 
   useEffect(() => {
     const element = document.getElementById('menu');
+    const elementContent = document.getElementById('content');
     if (element) {
       if (menu) {
         element.classList.remove('w-0');
         element.classList.add('w-80');
+        element.classList.remove('opacity-0');
+        element.classList.add('opacity-100');
       } else {
         element.classList.remove('w-80');
         element.classList.add('w-0');
+        element.classList.remove('opacity-100');
+        element.classList.add('opacity-0');
+      }
+    }
+    if (elementContent) {
+      if (menu) {
+        elementContent.classList.remove('opacity-100');
+        elementContent.classList.add('opacity-0');
+        elementContent.classList.add('lg:opacity-100');
+      } else {
+        elementContent.classList.remove('opacity-0');
+        elementContent.classList.add('opacity-100');
+        elementContent.classList.add('lg:opacity-100');
       }
     }
   }, [menu]);

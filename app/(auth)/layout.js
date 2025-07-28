@@ -39,7 +39,7 @@ export default async function RootLayout({ children }) {
               playsInline
               className="absolute h-auto w-auto min-h-full min-w-full object-cover -z-1"
             >
-              <source src="/video/login.mp4" type="video/mp4" />
+              <source src="/assets/video/login.mp4" type="video/mp4" />
             </video>
             <div className="relative z-1  bg-black/80 w-full h-full place-content-center text-center flex flex-col ">
               <span className="font-black text-base-100 text-6xl">

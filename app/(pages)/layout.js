@@ -2,8 +2,8 @@ import '@/app/globals.css';
 import '@/app/loading.css';
 import Navbar from '@/app/components/navbar';
 import Menu from '@/app/components/menu';
-import { cekLogin } from '../components/auth';
 import { Poppins } from 'next/font/google';
+import { CekLogin } from '@/lib/func';
 
 const font = Poppins({
   subsets: ['latin'],
@@ -17,7 +17,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  await cekLogin();
   return (
     <html lang="id">
       <body className={`${font.className} antialiased h-dvh`}>
@@ -36,7 +35,10 @@ export default async function RootLayout({ children }) {
           </div>
 
           {/* Content */}
-          <div className="row-start-2 col-start-2 p-4 max-w-full overflow-auto print:overflow-visible">
+          <div
+            className="row-start-2 col-start-2 p-4 max-w-full overflow-auto print:overflow-visible"
+            id="content"
+          >
             {children}
           </div>
         </div>

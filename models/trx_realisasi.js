@@ -15,7 +15,6 @@ export async function selectAll() {
 
 export async function getTahap() {
   const { tahun, kode_opd, level } = await getSession();
-  console.log(tahun, kode_opd, level);
   const sql = await query({
     query: `SELECT * FROM v_tahap WHERE tahun=? ${level <= 1 ? '' : 'AND kode_opd=?'}`,
     values: [tahun, kode_opd],
@@ -180,7 +179,6 @@ export async function del(data) {
 }
 
 export async function delTahap(data) {
-  console.log(data);
   const sql = await query({
     query: `DELETE FROM ${table} WHERE kode_opd=? AND tahap=? AND  tahun=?`,
     values: data,

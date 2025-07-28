@@ -1,12 +1,12 @@
-"use client";
-import { SwalError, SwalLoading, SwalSuccess } from "@/app/components/alert";
-import fetchData from "@/lib/fetch";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
-import { IoMdSave } from "react-icons/io";
-import { PatternFormat } from "react-number-format";
-import Swal from "sweetalert2";
+'use client';
+import { SwalError, SwalLoading, SwalSuccess } from '@/app/components/alert';
+import fetchData from '@/lib/fetch';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef } from 'react';
+import { IoMdSave } from 'react-icons/io';
+import { PatternFormat } from 'react-number-format';
+import Swal from 'sweetalert2';
 
 export default function Ubah() {
   const { id } = useParams();
@@ -15,15 +15,15 @@ export default function Ubah() {
   const inputKegiatan = useRef();
 
   const getData = useCallback(async () => {
-    SwalLoading("Memuat data...");
+    SwalLoading('Memuat data...');
     const { data } = await fetchData(
-      "/api/kegiatan",
-      "POST",
+      '/api/kegiatan',
+      'POST',
       {
-        a: "cari",
+        a: 'cari',
         data: id,
       },
-      () => router.push("/parameter/kegiatan")
+      () => router.push('/parameter/kegiatan')
     );
 
     data.map((value) => {
@@ -34,21 +34,21 @@ export default function Ubah() {
   }, [id, router]);
 
   async function submit(e) {
-    SwalLoading("Menyimpan...");
+    SwalLoading('Menyimpan...');
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const kode = formData.get("kode");
-    const kegiatan = formData.get("kegiatan");
+    const kode = formData.get('kode');
+    const kegiatan = formData.get('kegiatan');
 
     try {
-      const response = await fetchData("/api/kegiatan", "POST", {
-        a: "ubah",
+      const response = await fetchData('/api/kegiatan', 'POST', {
+        a: 'ubah',
         data: [kode, kegiatan, id],
       });
 
       if (response.status) {
-        SwalSuccess(() => router.back(), "Data berhasil disimpan");
+        SwalSuccess(() => router.back(), 'Data berhasil disimpan');
       }
     } catch (error) {
       SwalError(() => {}, error);
@@ -65,7 +65,8 @@ export default function Ubah() {
         <legend className="fieldset-legend">Kode Kegiatan</legend>
         <PatternFormat
           format="#.##.##.#.##"
-          mask="_"
+          pattern="\d\.\d{2}\.\d{2}\.\d\.\d{2}"
+          mask={'_'}
           className="input validator w-full join-item"
           placeholder="Masukkan Kode Kegiatan"
           name="kode"

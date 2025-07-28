@@ -2,47 +2,25 @@
 import { SwalError, SwalLoading, SwalSuccess } from '@/app/components/alert';
 import fetchData from '@/lib/fetch';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { IoMdSave } from 'react-icons/io';
 import { PatternFormat } from 'react-number-format';
-import Swal from 'sweetalert2';
 
-export default function Ubah() {
-  const { id } = useParams();
+export default function Tambah() {
   const router = useRouter();
-  const [initData, setInitData] = useState([]);
-
-  const getData = useCallback(async () => {
-    SwalLoading('Memuat data...');
-    const { data } = await fetchData(
-      '/api/bidang',
-      'POST',
-      {
-        a: 'cari',
-        data: id,
-      },
-      () => router.push('/parameter/bidang')
-    );
-
-    data.map((value) => {
-      setInitData(value);
-    });
-    Swal.close();
-  }, [id, router]);
 
   async function submit(e) {
     SwalLoading('Menyimpan...');
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    const program = formData.get('program');
     const kode = formData.get('kode');
-    const bidang = formData.get('bidang');
 
     try {
-      const response = await fetchData('/api/bidang', 'POST', {
-        a: 'ubah',
-        data: [kode, bidang, id],
+      const response = await fetchData('/api/program', 'POST', {
+        a: 'tambah',
+        data: [kode, program],
       });
 
       if (response.status) {
@@ -52,42 +30,37 @@ export default function Ubah() {
       SwalError(() => {}, error);
     }
   }
-  useEffect(() => {
-    getData();
-  }, [getData]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={(e) => submit(e)}>
-      <h1 className="font-bold">Ubah bidang</h1>
+      <h1 className="font-bold">Tambah Program</h1>
       <fieldset className="fieldset">
-        <legend className="fieldset-legend">Kode Bidang</legend>
+        <legend className="fieldset-legend">Kode Program</legend>
         <PatternFormat
-          format="#.##"
-          pattern="\d\.\d{2}"
+          format="#.##.##"
+          pattern="\d\.\d{2}\.\d{2}"
           mask={'_'}
           className="input validator w-full join-item"
-          placeholder="Masukkan Kode Bidang"
-          value={initData.kode}
+          placeholder="Masukkan Kode Program"
           name="kode"
           required
         />
         <p className="label italic">
-          Kode harus sama dengan Kode Bidang pada Aplikasi SIPD
+          Kode harus sama dengan Kode Program pada Aplikasi SIPD
         </p>
         <div className="validator-hint m-0 hidden">Tidak boleh kosong</div>
       </fieldset>
       <fieldset className="fieldset">
-        <legend className="fieldset-legend">Nama Bidang</legend>
+        <legend className="fieldset-legend">Nama Program</legend>
         <input
-          name="bidang"
-          defaultValue={initData.bidang}
+          name="program"
           type="text"
           className="input validator w-full"
-          placeholder="Masukkan Nama bidang"
+          placeholder="Masukkan Nama program"
           required
         />
         <p className="label italic">
-          Masukkan nama bidang yang ingin di tambahkan
+          Masukkan nama program yang ingin di tambahkan
         </p>
         <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
       </fieldset>
@@ -96,7 +69,7 @@ export default function Ubah() {
         <button type="submit" className="btn join-item btn-primary">
           <IoMdSave /> Simpan
         </button>
-        <Link href=".." type="button" className="btn join-item btn-error">
+        <Link href="." type="button" className="btn join-item btn-error">
           Kembali
         </Link>
       </div>

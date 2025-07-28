@@ -1,30 +1,30 @@
-"use client";
-import { SwalError, SwalLoading, SwalSuccess } from "@/app/components/alert";
-import fetchData from "@/lib/fetch";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { IoMdSave } from "react-icons/io";
-import { PatternFormat } from "react-number-format";
+'use client';
+import { SwalError, SwalLoading, SwalSuccess } from '@/app/components/alert';
+import fetchData from '@/lib/fetch';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { IoMdSave } from 'react-icons/io';
+import { PatternFormat } from 'react-number-format';
 
 export default function Tambah() {
   const router = useRouter();
 
   async function submit(e) {
-    SwalLoading("Menyimpan...");
+    SwalLoading('Menyimpan...');
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const kode = formData.get("kode");
-    const kegiatan = formData.get("kegiatan");
+    const kode = formData.get('kode');
+    const kegiatan = formData.get('kegiatan');
 
     try {
-      const response = await fetchData("/api/kegiatan", "POST", {
-        a: "tambah",
+      const response = await fetchData('/api/kegiatan', 'POST', {
+        a: 'tambah',
         data: [kode, kegiatan],
       });
 
       if (response.status) {
-        SwalSuccess(() => router.back(), "Data berhasil disimpan");
+        SwalSuccess(() => router.back(), 'Data berhasil disimpan');
       }
     } catch (error) {
       SwalError(() => {}, error);
@@ -38,6 +38,8 @@ export default function Tambah() {
         <legend className="fieldset-legend">Kode Kegiatan</legend>
         <PatternFormat
           format="#.##.##.#.##"
+          pattern="\d\.\d{2}\.\d{2}\.\d\.\d{2}"
+          mask={'_'}
           className="input validator w-full join-item"
           placeholder="Masukkan Kode Kegiatan"
           name="kode"
@@ -46,7 +48,9 @@ export default function Tambah() {
         <p className="label italic">
           Kode harus sama dengan Kode Kegiatan pada Aplikasi SIPD
         </p>
-        <div className="validator-hint m-0 hidden">Tidak boleh kosong</div>
+        <div className="validator-hint m-0 hidden">
+          Tidak boleh kosong / format salah
+        </div>
       </fieldset>
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Nama Kegiatan</legend>

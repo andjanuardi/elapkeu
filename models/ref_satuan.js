@@ -1,7 +1,7 @@
-"use server";
-import query from "@/lib/db";
+'use server';
+import query from '@/lib/db';
 
-const table = "ref_satuan";
+const table = 'ref_satuan';
 
 export async function selectAll() {
   const sql = await query({
@@ -20,6 +20,29 @@ export async function selectByColl(coll, value) {
   return sql;
 }
 
+export async function selectByColumns(columns, value, limit = null) {
+  const conditions = columns.map((col) => `${col} LIKE ?`).join(' OR ');
+  let values = Array(columns.length).fill(`%${value}%`);
+
+  let sqlQuery = `SELECT * FROM ${table} WHERE ${conditions}`;
+
+  if (value === '') {
+    sqlQuery = `SELECT * FROM ${table}`;
+    values = [];
+  }
+
+  if (limit !== null && !isNaN(limit)) {
+    sqlQuery += ` LIMIT ?`;
+    values.push(limit);
+  }
+
+  const sql = await query({
+    query: sqlQuery,
+    values: values,
+  });
+
+  return sql;
+}
 export async function insert(data) {
   const sql = await query({
     query: `INSERT INTO ${table} VALUES(?)`,

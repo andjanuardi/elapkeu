@@ -1,7 +1,7 @@
-"use server";
-import query from "@/lib/db";
+'use server';
+import query from '@/lib/db';
 
-const table = "ref_subkegiatan";
+const table = 'ref_subkegiatan';
 
 export async function selectAll() {
   const sql = await query({
@@ -13,7 +13,7 @@ export async function selectAll() {
 
 export async function selectByColl(coll, value) {
   const sql = await query({
-    query: `SELECT * FROM v_subkegiatan WHERE ${coll}=?`,
+    query: `SELECT * FROM ${table} WHERE ${coll}=?`,
     values: [value],
   });
 
@@ -22,7 +22,7 @@ export async function selectByColl(coll, value) {
 
 export async function insert(data) {
   const sql = await query({
-    query: `INSERT INTO ${table} VALUES(?,?)`,
+    query: `INSERT INTO ${table} VALUES(?,?,?,?,?)`,
     values: data,
   });
   return sql;
@@ -30,7 +30,7 @@ export async function insert(data) {
 
 export async function update(data) {
   const sql = await query({
-    query: `UPDATE ${table} SET kode=?,subkegiatan=? WHERE kode=?`,
+    query: `UPDATE ${table} SET kode=?,subkegiatan=?,kinerja=?,indikator=?,satuan=? WHERE kode=?`,
     values: data,
   });
   return sql;

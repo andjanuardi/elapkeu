@@ -16,13 +16,13 @@ export default function Ubah() {
   const getData = useCallback(async () => {
     SwalLoading('Memuat data...');
     const { data } = await fetchData(
-      '/api/bidang',
+      '/api/program',
       'POST',
       {
         a: 'cari',
         data: id,
       },
-      () => router.push('/parameter/bidang')
+      () => router.push('/parameter/program')
     );
 
     data.map((value) => {
@@ -37,12 +37,12 @@ export default function Ubah() {
 
     const formData = new FormData(e.target);
     const kode = formData.get('kode');
-    const bidang = formData.get('bidang');
+    const program = formData.get('program');
 
     try {
-      const response = await fetchData('/api/bidang', 'POST', {
+      const response = await fetchData('/api/program', 'POST', {
         a: 'ubah',
-        data: [kode, bidang, id],
+        data: [kode, program, id],
       });
 
       if (response.status) {
@@ -58,36 +58,36 @@ export default function Ubah() {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={(e) => submit(e)}>
-      <h1 className="font-bold">Ubah bidang</h1>
+      <h1 className="font-bold">Ubah Program</h1>
       <fieldset className="fieldset">
-        <legend className="fieldset-legend">Kode Bidang</legend>
+        <legend className="fieldset-legend">Kode Program</legend>
         <PatternFormat
-          format="#.##"
-          pattern="\d\.\d{2}"
+          format="#.##.##"
+          pattern="\d\.\d{2}\.\d{2}"
           mask={'_'}
           className="input validator w-full join-item"
-          placeholder="Masukkan Kode Bidang"
+          placeholder="Masukkan Kode Program"
           value={initData.kode}
           name="kode"
           required
         />
         <p className="label italic">
-          Kode harus sama dengan Kode Bidang pada Aplikasi SIPD
+          Kode harus sama dengan Kode Program pada Aplikasi SIPD
         </p>
         <div className="validator-hint m-0 hidden">Tidak boleh kosong</div>
       </fieldset>
       <fieldset className="fieldset">
-        <legend className="fieldset-legend">Nama Bidang</legend>
+        <legend className="fieldset-legend">Nama Program</legend>
         <input
-          name="bidang"
-          defaultValue={initData.bidang}
+          name="program"
+          defaultValue={initData.program}
           type="text"
           className="input validator w-full"
-          placeholder="Masukkan Nama bidang"
+          placeholder="Masukkan Nama Program"
           required
         />
         <p className="label italic">
-          Masukkan nama bidang yang ingin di tambahkan
+          Masukkan nama program yang ingin di tambahkan
         </p>
         <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
       </fieldset>

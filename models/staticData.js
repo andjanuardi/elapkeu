@@ -25,7 +25,5 @@ export const levelLabel = [
   'Administrator',
   'Admin OPD',
   'Operator OPD',
-  'Admin Akutansi',
-  'Admin Perbedaharaan',
-  'Admin Anggaran',
+  'Verifikator',
 ];
