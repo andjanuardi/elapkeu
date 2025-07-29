@@ -87,7 +87,7 @@ export default function Table() {
                 <tr
                   key={key}
                   onDoubleClick={() => setEditingRow(item.kode_bidang)}
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${item?.penyaluran ? '' : 'text-error'}`}
                 >
                   <td>{key + 1}</td>
                   <td>{item?.bidang || 'N/A'}</td>
@@ -145,7 +145,6 @@ export default function Table() {
                           <MdEdit />
                         </button>
                       )}
-
                       <button
                         className="btn join-item btn-square btn-ghost"
                         onClick={() => {

@@ -1,7 +1,26 @@
 'use server';
+import { getSession } from '@/app/components/auth';
 import query from '@/lib/db';
 
-const table = 'ref_program';
+const table = 't_pengaturan';
+
+export async function getWaktu() {
+  const { tahun } = await getSession();
+  const sql = await query({
+    query: `SELECT * FROM ${table} WHERE tahun=?`,
+    values: [tahun],
+  });
+  return sql;
+}
+
+export async function updateOne(data) {
+  const { tahun } = await getSession();
+
+  await query({
+    query: `UPDATE ${table} SET ${data.c}=? WHERE tahun=?`,
+    values: [data.val, tahun],
+  });
+}
 
 export async function selectAll() {
   const sql = await query({
@@ -43,10 +62,9 @@ export async function selectByColumns(columns, value, limit = null) {
 
   return sql;
 }
-
 export async function insert(data) {
   const sql = await query({
-    query: `INSERT INTO ${table} VALUES(?,?)`,
+    query: `INSERT INTO ${table} VALUES(?)`,
     values: data,
   });
   return sql;
@@ -54,7 +72,7 @@ export async function insert(data) {
 
 export async function update(data) {
   const sql = await query({
-    query: `UPDATE ${table} SET kode=?, program=? WHERE kode=?`,
+    query: `UPDATE ${table} SET satuan=? WHERE satuan=?`,
     values: data,
   });
   return sql;
@@ -62,7 +80,7 @@ export async function update(data) {
 
 export async function del(data) {
   const sql = await query({
-    query: `DELETE FROM ${table} WHERE kode=?`,
+    query: `DELETE FROM ${table} WHERE satuan=?`,
     values: data,
   });
   return sql;

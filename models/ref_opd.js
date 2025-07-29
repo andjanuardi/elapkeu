@@ -40,7 +40,7 @@ export async function selectByColumns(columns, value, limit = null) {
   const conditions = columns.map((col) => `${col} LIKE ?`).join(' OR ');
   let values = Array(columns.length).fill(`%${value}%`);
 
-  let sqlQuery = `SELECT * FROM ${table} WHERE ${conditions}`;
+  let sqlQuery = `SELECT * FROM ${table} WHERE (${conditions})`;
 
   if (value === '') {
     sqlQuery = `SELECT * FROM ${table}`;

@@ -19,7 +19,8 @@ export default async function Navbar() {
       </div>
       <div className="flex-none flex place-items-center gap-3 px-4">
         {session.tahun}
-        <div className="dropdown dropdown-end">
+        {/* NOTIF */}
+        {/* <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
             <div className="indicator">
               <IoMdNotifications className="text-2xl" />
@@ -50,7 +51,7 @@ export default async function Navbar() {
               </li>
             </ul>
           </div>
-        </div>
+        </div> */}
         <UserButton session={session} />
       </div>
     </div>

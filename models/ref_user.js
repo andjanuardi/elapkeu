@@ -36,7 +36,7 @@ export async function selectByColumns(columns, value, limit = null) {
   const conditions = columns.map((col) => `${col} LIKE ?`).join(' OR ');
   let values = Array(columns.length).fill(`%${value}%`);
 
-  let sqlQuery = `SELECT * FROM ref_pejabat WHERE ${conditions} AND aktif=1`;
+  let sqlQuery = `SELECT * FROM ref_pejabat WHERE (${conditions}) AND aktif=1`;
 
   if (value === '') {
     sqlQuery = `SELECT * FROM ref_pejabat WHERE aktif=1`;

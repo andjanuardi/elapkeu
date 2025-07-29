@@ -2,8 +2,7 @@
 import { SwalError, SwalLoading, SwalSuccess } from '@/app/components/alert';
 import { ListPicker } from '@/app/components/listPicker';
 import fetchData from '@/lib/fetch';
-import { levelLabel, PangkatGol } from '@/models/staticData';
-import md5 from 'md5';
+import { PangkatGol } from '@/models/staticData';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -13,6 +12,7 @@ import { PatternFormat } from 'react-number-format';
 export default function Tambah({ session }) {
   const router = useRouter();
   const [OPD, setOPD] = useState([]);
+  const isAdmin = session.level <= 1;
 
   async function submit(e) {
     SwalLoading('Menyimpan...');
@@ -21,24 +21,23 @@ export default function Tambah({ session }) {
     const formData = new FormData(e.target);
     const nama = formData.get('nama');
     const nip = formData.get('nip');
+    const golongan = PangkatGol[formData.get('panggol')].golongan;
+    const pangkat = PangkatGol[formData.get('panggol')].pangkat;
     const jabatan = formData.get('jabatan');
-    const pass = md5(formData.get('pass'));
-    const email = formData.get('email');
-    const level = formData.get('level');
+    const aktif = formData.get('aktif');
 
     try {
-      const response = await fetchData('/api/pengguna', 'POST', {
+      const response = await fetchData('/api/pejabat', 'POST', {
         a: 'tambah',
         data: [
           null,
+          isAdmin ? OPD.kode : session.kode_opd,
           nama,
           nip,
+          pangkat,
+          golongan,
           jabatan,
-          session.level <= 1 ? OPD.kode : session.kode_opd,
-          pass,
-          email,
-          level,
-          '-',
+          aktif,
         ],
       });
 
@@ -50,21 +49,10 @@ export default function Tambah({ session }) {
     }
   }
 
-  const levelList = [
-    levelLabel,
-    levelLabel.filter((item, index) => index >= 2),
-    levelLabel.filter((item, index) => index === 3),
-    levelLabel.filter((item, index) => index === 4),
-    levelLabel.filter((item, index) => index === 5),
-    levelLabel.filter((item, index) => index === 6),
-  ];
-
-  console.log(levelList[session.level]);
-
   return (
-    <form className="flex flex-col " onSubmit={(e) => submit(e)}>
-      <h1 className="font-bold">Tambah Penguna</h1>
-      {session.level <= 1 && (
+    <form className="flex flex-col gap-4" onSubmit={(e) => submit(e)}>
+      <h1 className="font-bold">Tambah Pejabat</h1>
+      {isAdmin && (
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Pilih OPD</legend>
           <ListPicker
@@ -86,10 +74,10 @@ export default function Tambah({ session }) {
           name="nama"
           type="text"
           className="input validator w-full"
-          placeholder="Masukkan Nama Pengguna"
+          placeholder="Masukkan Nama Pejabat"
           required
         />
-        <p className="label italic">Nama Pengguna</p>
+        <p className="label italic">Nama Pejabat</p>
         <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
       </fieldset>
       <fieldset className="fieldset">
@@ -103,10 +91,27 @@ export default function Tambah({ session }) {
           pattern="\d{18}"
           required
         />
-        <p className="label italic">Nomor Induk Pegawai (NIP) Pengguna</p>
+        <p className="label italic">Nomor Induk Pegawai (NIP) Pejabat</p>
         <div className="validator-hint m-0 hidden">
           Tidak boleh kosong / Belum Lengkap
         </div>
+      </fieldset>
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">Pangkat / Golongan</legend>
+        <select
+          name="panggol"
+          className="select validator w-full"
+          placeholder="Pilih Pangkat / Golongan"
+          required
+        >
+          {PangkatGol.map((item, key) => (
+            <option key={key} value={key}>
+              {item.pangkat} ({item.golongan})
+            </option>
+          ))}
+        </select>
+        <p className="label italic">Pilih Pangkat / Golongan Pejabat</p>
+        <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
       </fieldset>
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Jabatan</legend>
@@ -121,48 +126,29 @@ export default function Tambah({ session }) {
         <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
       </fieldset>
       <fieldset className="fieldset">
-        <legend className="fieldset-legend">Email</legend>
-        <input
-          name="email"
-          type="email"
-          className="input validator w-full"
-          placeholder="Masukkan email"
-          required
-        />
-        <p className="label italic">Masukkan Email</p>
-        <div className="validator-hint mt-0 hidden">
-          Tidak boleh kosong/ format tidak sesuai
+        <legend className="fieldset-legend">Status ?</legend>
+        <div className="flex gap-2 items-center">
+          <input
+            type="radio"
+            name="aktif"
+            className="radio radio-success "
+            defaultChecked
+            value={1}
+          />
+          Aktif
+          <input
+            type="radio"
+            name="aktif"
+            className="radio ml-2 radio-error"
+            value={0}
+          />
+          Tidak Aktif
         </div>
-      </fieldset>
-
-      <fieldset className="fieldset">
-        <legend className="fieldset-legend">Level</legend>
-        <select className="select validator w-full" name="level">
-          {levelList[session.level].map((item, key) => (
-            <option key={key} value={item.id}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-        <p className="label italic">Pilih Level Pengguna</p>
+        <p className="label italic">
+          Pilih status jabatan masih aktif atau tidak?
+        </p>
         <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
       </fieldset>
-
-      <fieldset className="fieldset">
-        <legend className="fieldset-legend">Kata Sandi</legend>
-        <input
-          name="pass"
-          type="password"
-          className="input validator w-full"
-          placeholder="Masukkan Kata Sandi"
-          required
-        />
-        <p className="label italic">Masukkan Kata Sandi</p>
-        <div className="validator-hint mt-0 hidden">
-          Tidak boleh kosong/ format tidak sesuai
-        </div>
-      </fieldset>
-
       <div className="join justify-end">
         <button type="submit" className="btn join-item btn-primary">
           <IoMdSave /> Simpan

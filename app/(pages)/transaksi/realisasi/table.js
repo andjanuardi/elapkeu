@@ -74,7 +74,7 @@ export default function TableTahap({ session }) {
                 <th>Realisasi Tahap Ini</th>
                 <th>Realisasi Total</th>
                 <th className="w-0 text-center">Persentase</th>
-                <th className="w-0 text-center">Status</th>
+                {!isAdmin && <th className="w-0 text-center">Status</th>}
                 <th className="w-0 text-right">
                   <div className="join">
                     <button className="join-item btn" onClick={() => refresh()}>
@@ -108,9 +108,11 @@ export default function TableTahap({ session }) {
                     <td>
                       {persen?.toLocaleString('id-ID') || 0} {data && '%'}
                     </td>
-                    <td className="w-0 whitespace-nowrap text-center">
-                      <Status stat={data ? data?.status : -1} />
-                    </td>
+                    {!isAdmin && (
+                      <td className="w-0 whitespace-nowrap text-center">
+                        <Status stat={data ? data?.status : -1} />
+                      </td>
+                    )}
                     <td className="text-right">
                       <div className="join">
                         {!isAdmin && (

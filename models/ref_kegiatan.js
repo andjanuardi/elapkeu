@@ -1,7 +1,7 @@
-"use server";
-import query from "@/lib/db";
+'use server';
+import query from '@/lib/db';
 
-const table = "ref_kegiatan";
+const table = 'ref_kegiatan';
 
 export async function selectAll() {
   const sql = await query({
@@ -21,12 +21,12 @@ export async function selectByColl(coll, value) {
 }
 
 export async function selectByColumns(columns, value, limit = null) {
-  const conditions = columns.map((col) => `${col} LIKE ?`).join(" OR ");
+  const conditions = columns.map((col) => `${col} LIKE ?`).join(' OR ');
   let values = Array(columns.length).fill(`%${value}%`);
 
-  let sqlQuery = `SELECT * FROM v_kegiatan WHERE ${conditions}`;
+  let sqlQuery = `SELECT * FROM v_kegiatan WHERE (${conditions})`;
 
-  if (value === "") {
+  if (value === '') {
     sqlQuery = `SELECT * FROM v_kegiatan`;
     values = [];
   }

@@ -102,11 +102,11 @@ export const menu = [
         label: 'Pengaturan Pengguna',
         link: '/pengaturan/pengguna',
       },
-      // {
-      //   logo: <FcOvertime />,
-      //   label: 'Pengaturan Batas Waktu',
-      //   link: '/pengaturan-waktu',
-      // },
+      {
+        logo: <FcOvertime />,
+        label: 'Pengaturan Batas Waktu',
+        link: '/pengaturan/waktu',
+      },
       // {
       //   logo: <FcSettings />,
       //   label: 'Pengaturan Lainnya',

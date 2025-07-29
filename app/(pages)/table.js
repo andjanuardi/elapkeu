@@ -23,7 +23,9 @@ export default function Table() {
   let total_realisasi = 0;
   let total_sisa = 0;
 
-  return (
+  return isLoading ? (
+    <div className="skeleton h-70 col-span-4"></div>
+  ) : (
     <div className="card  bg-base-100 card-sm shadow-sm col-span-4">
       <div className="card-body">
         <table className="table">

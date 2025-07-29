@@ -21,9 +21,9 @@ export const PangkatGol = [
 export const tahap = [1, 2, 3];
 
 export const levelLabel = [
-  'Super Admin',
-  'Administrator',
-  'Admin OPD',
-  'Operator OPD',
-  'Verifikator',
+  { id: 0, label: 'Super Admin' },
+  { id: 1, label: 'Administrator' },
+  { id: 2, label: 'Admin OPD' },
+  { id: 3, label: 'Operator OPD' },
+  // { id: 4, label: 'Verifikator' },
 ];

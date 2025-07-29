@@ -13,7 +13,7 @@ export function UserButton({ session = {} }) {
         <div className="text-right hidden lg:flex flex-col leading-3  ">
           <div>{session.nama}</div>
           <div className="text-neutral-500 text-xs">
-            {levelLabel[session?.level]}
+            {levelLabel[session?.level].label}
           </div>
         </div>
         <IoMdPerson className="text-2xl" />

@@ -2,50 +2,54 @@
 import { SwalError, SwalLoading, SwalSuccess } from '@/app/components/alert';
 import fetchData from '@/lib/fetch';
 import readExcel from '@/lib/readExcelFile';
-import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { RiCheckboxCircleFill, RiFileExcel2Fill } from 'react-icons/ri';
-import { IoMdCloudUpload } from 'react-icons/io';
+import { FcDatabase } from 'react-icons/fc';
+import {
+  RiCheckboxCircleFill,
+  RiFileChartFill,
+  RiFileExcel2Fill,
+  RiZoomInFill,
+} from 'react-icons/ri';
+import {
+  IoMdCloseCircle,
+  IoMdCloudUpload,
+  IoMdSave,
+  IoMdTabletPortrait,
+} from 'react-icons/io';
 
 export default function Tambah({ session }) {
-  const [dataTable, setDataTable] = useState([]);
-  const { id } = useParams();
+  const [dataTable, setDataTable] = useState();
+  const router = useRouter();
 
   const btnUpload = useRef(null);
 
-  const router = useRouter();
-
-  async function submit() {
+  async function submit(e) {
     SwalLoading('Menyimpan...');
+    e.preventDefault();
 
-    const submitData = dataTable.map((item) => ({
-      ...item,
-      tahap: parseFloat(id),
-      tahun: parseFloat(session.tahun),
-      kode_user: parseFloat(session.kode),
-    }));
+    const formData = new FormData(e.target);
+    const kode = formData.get('kode');
+    const nama = formData.get('nama');
 
-    await fetchData('/api/realisasi', 'POST', {
-      a: 'hapustahap',
-      data: [session.kode_opd, id, session.tahun],
-    }).then(async () => {
-      try {
-        const response = await fetchData('/api/realisasi', 'POST', {
-          a: 'tambahupload',
-          data: submitData,
-        });
+    try {
+      const response = await fetchData('/api/opd', 'POST', {
+        a: 'tambah',
+        data: [kode, nama],
+      });
 
-        if (response.status) {
-          SwalSuccess(() => router.back(), 'Data berhasil disimpan');
-        }
-      } catch (error) {
-        SwalError(() => {}, error);
+      if (response.status) {
+        SwalSuccess(() => router.back(), 'Data berhasil disimpan');
       }
-    });
+    } catch (error) {
+      SwalError(() => {}, error);
+    }
   }
 
   async function handleFileSelected(input) {
-    const data = await readExcel(input, session.kode_opd);
+    const data = await readExcel(input);
+
     if (data.length > 0) {
       setDataTable(data);
     }
@@ -55,9 +59,7 @@ export default function Tambah({ session }) {
     <>
       {!dataTable && (
         <div className="flex justify-center items-center w-full h-full flex-col gap-4">
-          <label className="font-bold text-lg">
-            Tambah Realisasi Tahap {id}
-          </label>
+          <label className="font-bold text-lg">Tambah Realisasi</label>
 
           <button
             type="button"
@@ -104,20 +106,13 @@ export default function Tambah({ session }) {
                         Nama File
                       </div>
                     </div>
-                    <div className="divider divider-horizontal"></div>
 
-                    <div>
-                      <div className="font-black text-lg">TAHAP {id}</div>
-                      <div className="text-xs uppercase font-semibold opacity-60">
-                        Tahap
-                      </div>
-                    </div>
                     <div className="divider divider-horizontal"></div>
                     <div>
                       <div className="font-black text-lg">
                         Rp.{' '}
                         {dataTable
-                          .reduce((sum, item) => sum + item.rencana_anggaran, 0)
+                          .reduce((sum, item) => sum + item.anggaran, 0)
                           .toLocaleString('id-ID')}
                         {',-'}
                       </div>
@@ -158,10 +153,7 @@ export default function Tambah({ session }) {
                   detail, Lanjutkan simpan ?
                 </span>
                 <div className="join">
-                  <button
-                    className="btn btn-sm btn-success join-item"
-                    onClick={() => submit()}
-                  >
+                  <button className="btn btn-sm btn-success join-item">
                     <RiCheckboxCircleFill />
                     Simpan
                   </button>
@@ -195,7 +187,7 @@ export default function Tambah({ session }) {
                   <td className="text-center">{item.kode_subkegiatan}</td>
                   <td>{item.subkegiatan}</td>
                   <td className="text-right">
-                    {item.rencana_anggaran.toLocaleString('id-ID')}
+                    {item.anggaran.toLocaleString('id-ID')}
                   </td>
                   <td className="text-right">
                     {item.realisasi.toLocaleString('id-ID')}
@@ -207,5 +199,46 @@ export default function Tambah({ session }) {
         </div>
       )}
     </>
+
+    // <form className="flex flex-col gap-4" onSubmit={(e) => submit(e)}>
+    //   <h1 className="font-bold">Tambah OPD</h1>
+    //   <fieldset className="fieldset">
+    //     <legend className="fieldset-legend">Kode OPD</legend>
+    //     <input
+    //       name="kode"
+    //       type="text"
+    //       className="input validator w-full"
+    //       placeholder="Masukkan kode OPD"
+    //       required
+    //     />
+    //     <p className="label italic">
+    //       Kode harus sama dengan Kode OPD pada Aplikasi SIPD
+    //     </p>
+    //     <div className="validator-hint m-0 hidden">Tidak boleh kosong</div>
+    //   </fieldset>
+    //   <fieldset className="fieldset">
+    //     <legend className="fieldset-legend">Nama OPD</legend>
+    //     <input
+    //       name="nama"
+    //       type="text"
+    //       className="input validator w-full"
+    //       placeholder="Masukkan Nama OPD"
+    //       required
+    //     />
+    //     <p className="label italic">
+    //       Nama harus sama dengan Nama OPD pada Aplikasi SIPD
+    //     </p>
+    //     <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
+    //   </fieldset>
+
+    //   <div className="join justify-end">
+    //     <button type="submit" className="btn join-item btn-primary">
+    //       <IoMdSave /> Simpan
+    //     </button>
+    //     <Link href=".." type="button" className="btn join-item btn-error">
+    //       Kembali
+    //     </Link>
+    //   </div>
+    // </form>
   );
 }
