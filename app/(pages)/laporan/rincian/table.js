@@ -17,10 +17,14 @@ export default function ControlLaporan({ session }) {
   const [pejabat, setPejabat] = useState(null);
   const [tanggal, setTanggal] = useState(getTanggal());
   const [dataTable, setDataTable] = useState(null);
+  const [dataPenyaluran, setDataPenyaluran] = useState(null);
   const [showPenyaluran, setShowPenyaluran] = useState(true);
 
   const getData = useCallback(async () => {
     SwalLoading('Memuat Data...');
+    const { data: penyalurandata } = await fetchData('/api/penyaluran');
+    penyalurandata && setDataPenyaluran(penyalurandata);
+
     const { data } = await fetchData('/api/laporan/rincian', 'POST', {
       kode_opd: session.level <= 1 ? opd?.kode || opd.value : session.kode_opd,
       kode_bidang: bidang?.kode || bidang.value,
@@ -143,6 +147,7 @@ export default function ControlLaporan({ session }) {
             tahun={session.tahun}
             activeBidang={bidang.bidang}
             tanggal={tanggal}
+            dataPenyaluran={dataPenyaluran}
           />
         )}
       </div>
@@ -157,8 +162,9 @@ export function Table({
   pejabat,
   showPenyaluran = true,
   activeBidang,
-  tanggal,
+  tanggal = null,
   tahun,
+  dataPenyaluran = [],
 }) {
   const fields = [
     'rencana_anggaran',
@@ -176,9 +182,24 @@ export function Table({
         acc[key] = {
           kode_bidang: item.kode_bidang,
           kode_program: item.kode_program,
-          penyaluran_1: item.penyaluran_1,
-          penyaluran_2: item.penyaluran_2,
-          penyaluran_3: item.penyaluran_3,
+          penyaluran_1: dataPenyaluran
+            .filter(
+              (item) =>
+                item.kode_bidang === item.kode_bidang && item.tahap === 1
+            )
+            .map((item) => parseFloat(item.nilai)),
+          penyaluran_2: dataPenyaluran
+            .filter(
+              (item) =>
+                item.kode_bidang === item.kode_bidang && item.tahap === 2
+            )
+            .map((item) => parseFloat(item.nilai)),
+          penyaluran_3: dataPenyaluran
+            .filter(
+              (item) =>
+                item.kode_bidang === item.kode_bidang && item.tahap === 3
+            )
+            .map((item) => parseFloat(item.nilai)),
           ...Object.fromEntries(fields.map((f) => [f, 0])),
         };
       }
@@ -244,9 +265,9 @@ export function Table({
 
   bidang.forEach((item) => {
     total.rencana_anggaran += item.rencana_anggaran || 0;
-    total.penyaluran_1 += item.penyaluran_1 || 0;
-    total.penyaluran_2 += item.penyaluran_2 || 0;
-    total.penyaluran_3 += item.penyaluran_3 || 0;
+    total.penyaluran_1 += parseFloat(item.penyaluran_1) || 0;
+    total.penyaluran_2 += parseFloat(item.penyaluran_2) || 0;
+    total.penyaluran_3 += parseFloat(item.penyaluran_3) || 0;
     total.realisasi_1 += item.realisasi_1 || 0;
     total.realisasi_2 += item.realisasi_2 || 0;
     total.realisasi_3 += item.realisasi_3 || 0;
@@ -298,21 +319,21 @@ export function Table({
                   {showPenyaluran && (
                     <>
                       <td className="text-right">
-                        {item_opd?.penyaluran_1?.toLocaleString('id-ID') || '-'}
+                        {/* {item_opd?.penyaluran_1?.toLocaleString('id-ID') || '-'} */}
                       </td>
                       <td className="text-right">
-                        {item_opd?.penyaluran_2?.toLocaleString('id-ID') || '-'}
+                        {/* {item_opd?.penyaluran_2?.toLocaleString('id-ID') || '-'} */}
                       </td>
                       <td className="text-right">
-                        {item_opd?.penyaluran_3?.toLocaleString('id-ID') || '-'}
+                        {/* {item_opd?.penyaluran_3?.toLocaleString('id-ID') || '-'} */}
                       </td>
                       <td className="text-right">
-                        {jumlah_penyaluran?.toLocaleString('id-ID') || '-'}
+                        {/* {jumlah_penyaluran?.toLocaleString('id-ID') || '-'} */}
                       </td>
                       <td className="text-right">
-                        {persen_penyaluran?.toLocaleString('id-ID', {
+                        {/* {persen_penyaluran?.toLocaleString('id-ID', {
                           maximumFractionDigits: 2,
-                        }) || '-'}
+                        }) || '-'} */}
                       </td>
                     </>
                   )}
@@ -673,9 +694,9 @@ export function Table({
           <tbody className="text-xs">
             {bidang.map((item_bidang, key_bidang) => {
               const jumlah_penyaluran =
-                item_bidang?.penyaluran_1 +
-                item_bidang?.penyaluran_2 +
-                item_bidang?.penyaluran_3;
+                parseFloat(item_bidang?.penyaluran_1 || 0) +
+                parseFloat(item_bidang?.penyaluran_2 || 0) +
+                parseFloat(item_bidang?.penyaluran_3 || 0);
 
               const persen_penyaluran =
                 (jumlah_penyaluran / item_bidang?.rencana_anggaran) * 100;
@@ -715,7 +736,9 @@ export function Table({
                             '-'}
                         </td>
                         <td className="text-right">
-                          {jumlah_penyaluran?.toLocaleString('id-ID') || '-'}
+                          {parseFloat(jumlah_penyaluran || 0).toLocaleString(
+                            'id-ID'
+                          ) || '-'}
                         </td>
                         <td className="text-right">
                           {persen_penyaluran?.toLocaleString('id-ID', {
@@ -769,6 +792,7 @@ export function Table({
         <div className="w-full flex place-content-end p-4 pr-20 text-sm">
           <div className="max-w-100 text-center mt-4  ">
             KAB. SIMEULUE, {tanggal} <br />
+            {/* KAB. SIMEULUE, {tanggal} <br /> */}
             {pejabat?.jabatan} <br />
             <div className="py-10"></div>
             <strong>{pejabat?.nama}</strong>

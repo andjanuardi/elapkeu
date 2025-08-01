@@ -2,45 +2,11 @@
 import { getSession } from '@/app/components/auth';
 import query from '@/lib/db';
 
-const table = 't_pengaturan';
-
-export async function getWaktu() {
-  const { tahun } = await getSession();
-  const sql = await query({
-    query: `SELECT * FROM v_batas_waktu WHERE tahun=?`,
-    values: [tahun],
-  });
-  return sql;
-}
-
-export async function resetWaktu() {
-  const { tahun } = await getSession();
-
-  const sql = await query({
-    query:
-      'INSERT INTO `t_pengaturan` (`tahun`, `batas_tahap1`, `batas_tahap2`, `batas_tahap3`) VALUES (?,?,?,?)',
-    values: [
-      tahun,
-      `${tahun}-04-30 23:59:59`,
-      `${tahun}-08-31 23:59:59`,
-      `${tahun}-12-31 23:59:59`,
-    ],
-  });
-  return sql;
-}
-
-export async function updateOne(data) {
-  const { tahun } = await getSession();
-
-  await query({
-    query: `UPDATE ${table} SET ${data.c}=? WHERE tahun=?`,
-    values: [data.val, tahun],
-  });
-}
+const table = 'trx_penyaluran';
 
 export async function selectAll() {
   const sql = await query({
-    query: `SELECT * FROM ${table}`,
+    query: `SELECT * FROM v_penyaluran`,
     values: [],
   });
   return sql;
@@ -78,17 +44,21 @@ export async function selectByColumns(columns, value, limit = null) {
 
   return sql;
 }
+
 export async function insert(data) {
+  const { tahun } = await getSession();
   const sql = await query({
-    query: `INSERT INTO ${table} VALUES(?)`,
+    query: `INSERT INTO ${table} VALUES(NULL,?,${tahun},?,?)`,
     values: data,
   });
   return sql;
 }
 
 export async function update(data) {
+  const { tahun } = await getSession();
+
   const sql = await query({
-    query: `UPDATE ${table} SET satuan=? WHERE satuan=?`,
+    query: `UPDATE ${table} SET tahun=${tahun}, tahap=?, nilai=? WHERE kode=?`,
     values: data,
   });
   return sql;
@@ -96,7 +66,7 @@ export async function update(data) {
 
 export async function del(data) {
   const sql = await query({
-    query: `DELETE FROM ${table} WHERE satuan=?`,
+    query: `DELETE FROM ${table} WHERE kode=?`,
     values: data,
   });
   return sql;

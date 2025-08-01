@@ -6,13 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { RiCheckboxCircleFill, RiFileExcel2Fill } from 'react-icons/ri';
 import { IoMdCloudUpload } from 'react-icons/io';
+import { ListPicker } from '@/app/components/listPicker';
 
 export default function Tambah({ session }) {
-  const [dataTable, setDataTable] = useState([]);
+  const [dataTable, setDataTable] = useState(null);
   const { id } = useParams();
-
   const btnUpload = useRef(null);
-
+  const [activeBidang, setActiveBidang] = useState(null);
+  const [selectedFile, setSelectedFile] = useState('');
   const router = useRouter();
 
   async function submit() {
@@ -23,31 +24,28 @@ export default function Tambah({ session }) {
       tahap: parseFloat(id),
       tahun: parseFloat(session.tahun),
       kode_user: parseFloat(session.kode),
+      kode_bidang: activeBidang?.kode,
     }));
 
-    await fetchData('/api/realisasi', 'POST', {
-      a: 'hapustahap',
-      data: [session.kode_opd, id, session.tahun],
-    }).then(async () => {
-      try {
-        const response = await fetchData('/api/realisasi', 'POST', {
-          a: 'tambahupload',
-          data: submitData,
-        });
+    try {
+      const response = await fetchData('/api/realisasi', 'POST', {
+        a: 'tambahupload',
+        data: submitData,
+      });
 
-        if (response.status) {
-          SwalSuccess(() => router.back(), 'Data berhasil disimpan');
-        }
-      } catch (error) {
-        SwalError(() => {}, error);
+      if (response.status) {
+        SwalSuccess(() => router.back(), 'Data berhasil disimpan');
       }
-    });
+    } catch (error) {
+      SwalError(() => {}, error);
+    }
   }
 
   async function handleFileSelected(input) {
     const data = await readExcel(input, session.kode_opd);
     if (data.length > 0) {
       setDataTable(data);
+      setSelectedFile(btnUpload.current?.files[0]?.name);
     }
   }
 
@@ -58,25 +56,39 @@ export default function Tambah({ session }) {
           <label className="font-bold text-lg">
             Tambah Realisasi Tahap {id}
           </label>
+          <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-100 border p-4">
+            <legend className="fieldset-legend">Pilih Bidang</legend>
+            <label className="label">
+              <ListPicker
+                url={'/api/bidang'}
+                labelIndex={1}
+                placeholder="Cari bidang.."
+                onItemSelected={(e) => setActiveBidang(e)}
+              />
+            </label>
+          </fieldset>
+          {activeBidang && (
+            <>
+              <button
+                type="button"
+                className="btn btn-primary btn-lg flex items-center gap-2"
+                onClick={() => btnUpload.current?.click()}
+              >
+                <IoMdCloudUpload />
+                Upload File
+              </button>
 
-          <button
-            type="button"
-            className="btn btn-primary btn-lg flex items-center gap-2"
-            onClick={() => btnUpload.current?.click()}
-          >
-            <IoMdCloudUpload />
-            Upload File
-          </button>
+              <label className="italic">Upload Excel LRA dari SIPD</label>
 
-          <label className="italic">Upload Excel LRA dari SIPD</label>
-
-          <input
-            type="file"
-            className="hidden"
-            ref={btnUpload}
-            accept=".xlsx, .xls"
-            onChange={(item) => handleFileSelected(item)}
-          />
+              <input
+                type="file"
+                className="hidden"
+                ref={btnUpload}
+                accept=".xlsx, .xls"
+                onChange={(item) => handleFileSelected(item)}
+              />
+            </>
+          )}
         </div>
       )}
       {dataTable && (
@@ -97,9 +109,7 @@ export default function Tambah({ session }) {
                   </div>
                   <div className="flex justify-around">
                     <div>
-                      <div className="font-black text-lg">
-                        {btnUpload.current?.files[0]?.name}
-                      </div>
+                      <div className="font-black text-lg">{selectedFile}</div>
                       <div className="text-xs uppercase font-semibold opacity-60">
                         Nama File
                       </div>
@@ -107,9 +117,11 @@ export default function Tambah({ session }) {
                     <div className="divider divider-horizontal"></div>
 
                     <div>
-                      <div className="font-black text-lg">TAHAP {id}</div>
+                      <div className="font-black text-lg">
+                        {activeBidang.bidang}
+                      </div>
                       <div className="text-xs uppercase font-semibold opacity-60">
-                        Tahap
+                        Tahap {id}
                       </div>
                     </div>
                     <div className="divider divider-horizontal"></div>

@@ -38,6 +38,8 @@ export function ChartRealisasi() {
   const getData = useCallback(async () => {
     setLoading(true);
     const { data } = await fetchData('/api/dashboard/grafikTahap');
+    const { data: penyalurandata } = await fetchData('/api/penyaluran');
+
     const label = [
       'Total Anggaran',
       'Total Penyaluran',
@@ -50,7 +52,13 @@ export function ChartRealisasi() {
       for (let i = 0; i < 3; i++) {
         item === 'Total Anggaran' &&
           tempValue.push(data[i]?.rencana_anggaran || 0);
-        item === 'Total Penyaluran' && tempValue.push(data[i]?.penyaluran || 0);
+        item === 'Total Penyaluran' &&
+          tempValue.push(
+            penyalurandata.reduce(
+              (acc, item) => (item.tahap === i + 1 ? (acc += item.nilai) : acc),
+              0
+            )
+          );
         item === 'Total Realisasi' && tempValue.push(data[i]?.realisasi || 0);
         item === 'Sisa Anggaran' &&
           tempValue.push(data[i]?.rencana_anggaran - data[i]?.realisasi || 0);

@@ -34,7 +34,19 @@ export function UserButton({ session = {} }) {
 }
 
 export function MenuButton() {
+  const [isMobile, setIsMobile] = useState(false);
   const [menu, setMenu] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768); // or 640, 576 depending on breakpoint
+    };
+
+    handleResize(); // check on mount
+    window.addEventListener('resize', handleResize); // check on resize
+
+    return () => window.removeEventListener('resize', handleResize); // cleanup
+  }, []);
 
   useEffect(() => {
     const element = document.getElementById('menu');
@@ -52,17 +64,15 @@ export function MenuButton() {
         element.classList.add('opacity-0');
       }
     }
-    if (elementContent) {
-      if (menu) {
-        elementContent.classList.remove('opacity-100');
-        elementContent.classList.add('opacity-0');
-        elementContent.classList.add('lg:opacity-100');
-      } else {
-        elementContent.classList.remove('opacity-0');
-        elementContent.classList.add('opacity-100');
-        elementContent.classList.add('lg:opacity-100');
-      }
-    }
+    // if (elementContent) {
+    //   if (menu) {
+    //     elementContent.classList.remove('opacity-100');
+    //     elementContent.classList.add('opacity-0');
+    //   } else {
+    //     elementContent.classList.remove('opacity-0');
+    //     elementContent.classList.add('opacity-100');
+    //   }
+    // }
   }, [menu]);
 
   return (

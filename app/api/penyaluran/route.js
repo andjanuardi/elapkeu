@@ -1,21 +1,11 @@
-import { tahap } from '@/models/staticData';
 import {
   del,
   insert,
   selectAll,
   selectByColl,
-  update,
   selectByColumns,
-  getTahap,
-  insertUpload,
-  delTahap,
-  getByTahap,
-  updateOne,
-  getRincian,
-  getBidang,
-  updatePenyaluran,
-  delInvalid,
-} from '@/models/trx_realisasi';
+  update,
+} from '@/models/trx_penyaluran';
 
 export async function GET() {
   try {
@@ -37,44 +27,18 @@ export async function POST(request) {
       case 'tambah':
         await insert(data);
         break;
-      case 'tambahupload':
-        await insertUpload(data);
-        break;
-      case 'hapustahap':
-        await delTahap(data);
-        break;
       case 'ubah':
         await update(data);
-        break;
-      case 'ubahitem':
-        sql = await updateOne(data);
-        break;
-      case 'ubahpenyaluran':
-        await updatePenyaluran(data);
         break;
       case 'hapus':
         await del(data);
         break;
-      case 'hapusInvalid':
-        await delInvalid(data);
-        break;
       case 'cari':
         sql = await selectByColl('kode', data);
         break;
-      case 'getTahap':
-        sql = await getTahap();
-        break;
-      case 'getBidang':
-        sql = await getBidang(data);
-        break;
-      case 'getRincian':
-        sql = await getRincian();
-        break;
-      case 'getByTahap':
-        sql = await getByTahap(data);
-        break;
+
       case 'carisemua':
-        sql = await selectByColumns(['kode', 'opd'], data, limit);
+        sql = await selectByColumns(['kode', 'bidang'], data, limit);
         break;
       default:
         sql = 'error';

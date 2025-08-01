@@ -31,8 +31,7 @@ export function InputDate({
       </label>
       <input
         type="date"
-        className=" invisible h-0"
-        required
+        className="invisible h-0"
         ref={dateInput}
         defaultValue={getTanggalToInput()}
         onChange={(e) => {
@@ -72,8 +71,7 @@ export function InputDateTime({
       </label>
       <input
         type="datetime-local"
-        className=" invisible h-0"
-        required
+        className="invisible h-0"
         ref={dateInput}
         defaultValue={defaultValue}
         onChange={(e) => {

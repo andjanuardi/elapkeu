@@ -10,7 +10,10 @@ export default function TableData() {
   const [row, setRow] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const coll = [{ label: 'kode' }, { label: 'Bidang', className: 'w-full' }];
+  const coll = [
+    { label: 'kode', className: 'hidden' },
+    { label: 'Bidang', className: 'w-full' },
+  ];
 
   const getData = useCallback(async () => {
     const { data } = await fetchData('/api/bidang');

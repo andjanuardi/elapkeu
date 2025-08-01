@@ -6,41 +6,49 @@ import { MdAddChart } from 'react-icons/md';
 export default function Indikator() {
   const [dataIndikator, setDataIndikator] = useState([]);
   const [isLoading, setLoading] = useState(false);
+
   const getData = useCallback(async () => {
     setLoading(true);
     const { data } = await fetchData('/api/dashboard/indikator');
-    const sisa = data?.rencana_anggaran - data?.realisasi || 0;
+    const { data: penyalurandata } = await fetchData('/api/penyaluran');
+
+    const dataPenyaluran = penyalurandata.reduce(
+      (acc, curr) => (acc += parseFloat(curr.nilai)),
+      0
+    );
+
+    const sisa = data?.rencana_anggaran - data?.realisasi || null;
     const persen_penyaluran =
-      (data?.penyaluran / data?.rencana_anggaran) * 100 || 0;
+      (dataPenyaluran / data?.rencana_anggaran) * 100 || null;
     const persen_realisasi =
-      (data?.realisasi / data?.rencana_anggaran) * 100 || 0;
-    const persen_sisa = (sisa / data?.rencana_anggaran) * 100 || 0;
-    data &&
-      setDataIndikator([
-        {
-          title: 'TOTAL ANGGARAN',
-          value: data.rencana_anggaran,
-          icon: <MdAddChart className="text-7xl text-success" />,
-        },
-        {
-          title: 'TOTAL PENYALURAN',
-          value: data.penyaluran,
-          desc: persen_penyaluran,
-          icon: <MdAddChart className="text-7xl text-primary" />,
-        },
-        {
-          title: 'TOTAL REALISASI',
-          value: data.realisasi,
-          desc: persen_realisasi,
-          icon: <MdAddChart className="text-7xl text-info" />,
-        },
-        {
-          title: 'SISA ANGGARAN',
-          value: sisa,
-          desc: persen_sisa,
-          icon: <MdAddChart className="text-7xl text-warning" />,
-        },
-      ]);
+      (data?.realisasi / data?.rencana_anggaran) * 100 || null;
+    const persen_sisa = (sisa / data?.rencana_anggaran) * 100 || null;
+
+    setDataIndikator([
+      {
+        title: 'TOTAL ANGGARAN',
+        value: data?.rencana_anggaran,
+        icon: <MdAddChart className="text-7xl text-success" />,
+      },
+      {
+        title: 'TOTAL PENYALURAN ',
+        value: dataPenyaluran,
+        desc: persen_penyaluran,
+        icon: <MdAddChart className="text-7xl text-primary" />,
+      },
+      {
+        title: 'TOTAL REALISASI',
+        value: data?.realisasi,
+        desc: persen_realisasi,
+        icon: <MdAddChart className="text-7xl text-info" />,
+      },
+      {
+        title: 'SISA ANGGARAN',
+        value: sisa,
+        desc: persen_sisa,
+        icon: <MdAddChart className="text-7xl text-warning" />,
+      },
+    ]);
     setLoading(false);
   }, []);
 
@@ -83,7 +91,7 @@ export default function Indikator() {
                       )}
                     </div>
                     <div className="font-bold text-lg text-black/50">
-                      Rp. {(item.value || 0).toLocaleString('id-ID')}
+                      Rp. {(item?.value || 0).toLocaleString('id-ID')}
                     </div>
                   </div>
                 </div>

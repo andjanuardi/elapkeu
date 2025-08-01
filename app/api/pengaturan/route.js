@@ -1,4 +1,4 @@
-import { getWaktu, updateOne } from '@/models/ref_pengaturan';
+import { getWaktu, resetWaktu, updateOne } from '@/models/ref_pengaturan';
 
 export async function POST(request) {
   try {
@@ -7,6 +7,9 @@ export async function POST(request) {
     switch (a) {
       case 'waktu':
         sql = await getWaktu();
+        break;
+      case 'resetWaktu':
+        sql = await resetWaktu();
         break;
       case 'ubahitem':
         sql = await updateOne(data);

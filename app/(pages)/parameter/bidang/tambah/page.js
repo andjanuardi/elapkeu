@@ -15,12 +15,11 @@ export default function Tambah() {
 
     const formData = new FormData(e.target);
     const bidang = formData.get('bidang');
-    const kode = formData.get('kode');
 
     try {
       const response = await fetchData('/api/bidang', 'POST', {
         a: 'tambah',
-        data: [kode, bidang],
+        data: [null, bidang],
       });
 
       if (response.status) {
@@ -34,22 +33,7 @@ export default function Tambah() {
   return (
     <form className="flex flex-col gap-4" onSubmit={(e) => submit(e)}>
       <h1 className="font-bold">Tambah Bidang</h1>
-      <fieldset className="fieldset">
-        <legend className="fieldset-legend">Kode Bidang</legend>
-        <PatternFormat
-          format="#.##"
-          pattern="\d\.\d{2}"
-          mask={'_'}
-          className="input validator w-full join-item"
-          placeholder="Masukkan Kode Bidang"
-          name="kode"
-          required
-        />
-        <p className="label italic">
-          Kode harus sama dengan Kode Bidang pada Aplikasi SIPD
-        </p>
-        <div className="validator-hint m-0 hidden">Tidak boleh kosong</div>
-      </fieldset>
+
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Nama Bidang</legend>
         <input

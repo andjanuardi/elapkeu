@@ -1,6 +1,7 @@
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import {
+  FcBarChart,
   FcBullish,
   FcBusinessman,
   FcDepartment,
@@ -69,6 +70,11 @@ export const menu = [
     logo: <FcStatistics />,
     child: [
       {
+        logo: <FcBarChart />,
+        label: 'Data Penyaluran',
+        link: '/transaksi/penyaluran',
+      },
+      {
         logo: <FcBullish />,
         label: 'Data Realisasi',
         link: '/transaksi/realisasi',
@@ -128,7 +134,11 @@ const menuAdminOPD = [
     child: [menu[1].child[1]],
   },
   ,
-  menu[2],
+  {
+    ...menu[2],
+    child: [menu[2].child[1]],
+  },
+  ,
   menu[3],
   menu[4],
 ];
@@ -140,7 +150,10 @@ const menuOperatorOPD = [
     child: [menu[1].child[1]],
   },
   ,
-  menu[2],
+  {
+    ...menu[2],
+    child: [menu[2].child[1]],
+  },
   menu[3],
 ];
 

@@ -20,9 +20,14 @@ export default function ControlLaporan({ session }) {
   const [tanggal, setTanggal] = useState(getTanggal());
   const [dataTable, setDataTable] = useState(null);
   const [showPenyaluran, setShowPenyaluran] = useState(true);
+  const [dataPenyaluran, setDataPenyaluran] = useState(null);
 
   const getData = useCallback(async () => {
     SwalLoading('Memuat Data...');
+
+    const { data: penyalurandata } = await fetchData('/api/penyaluran');
+    penyalurandata && setDataPenyaluran(penyalurandata);
+
     const { data } = await fetchData('/api/laporan/rincian', 'POST', {
       kode_opd: session.level <= 1 ? opd?.kode || opd.value : session.kode_opd,
       kode_bidang: bidang?.kode || bidang.value,
@@ -150,6 +155,7 @@ export default function ControlLaporan({ session }) {
             activeBidang={bidang.bidang}
             tanggal={tanggal}
             activeTahap={tahap}
+            dataPenyaluran={dataPenyaluran}
           />
         )}
       </div>
@@ -166,6 +172,7 @@ export function Table({
   activeTahap,
   tanggal,
   tahun,
+  dataPenyaluran,
 }) {
   const fields = [
     'rencana_anggaran',
@@ -183,9 +190,24 @@ export function Table({
         acc[key] = {
           kode_bidang: item.kode_bidang,
           kode_program: item.kode_program,
-          penyaluran_1: item.penyaluran_1,
-          penyaluran_2: item.penyaluran_2,
-          penyaluran_3: item.penyaluran_3,
+          penyaluran_1: dataPenyaluran
+            .filter(
+              (item) =>
+                item.kode_bidang === item.kode_bidang && item.tahap === 1
+            )
+            .map((item) => parseFloat(item.nilai)),
+          penyaluran_2: dataPenyaluran
+            .filter(
+              (item) =>
+                item.kode_bidang === item.kode_bidang && item.tahap === 2
+            )
+            .map((item) => parseFloat(item.nilai)),
+          penyaluran_3: dataPenyaluran
+            .filter(
+              (item) =>
+                item.kode_bidang === item.kode_bidang && item.tahap === 3
+            )
+            .map((item) => parseFloat(item.nilai)),
           ...Object.fromEntries(fields.map((f) => [f, 0])),
         };
       }
@@ -229,9 +251,9 @@ export function Table({
 
   bidang.forEach((item) => {
     total.rencana_anggaran += item.rencana_anggaran || 0;
-    total.penyaluran_1 += item.penyaluran_1 || 0;
-    total.penyaluran_2 += item.penyaluran_2 || 0;
-    total.penyaluran_3 += item.penyaluran_3 || 0;
+    total.penyaluran_1 += parseFloat(item.penyaluran_1) || 0;
+    total.penyaluran_2 += parseFloat(item.penyaluran_2) || 0;
+    total.penyaluran_3 += parseFloat(item.penyaluran_3) || 0;
     total.realisasi_1 += item.realisasi_1 || 0;
     total.realisasi_2 += item.realisasi_2 || 0;
     total.realisasi_3 += item.realisasi_3 || 0;

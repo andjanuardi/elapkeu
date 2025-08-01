@@ -1,7 +1,7 @@
 'use server';
 import query from '@/lib/db';
 
-const table = 'ref_bidang';
+const table = 'ref_bidang_sg';
 
 export async function selectAll() {
   const sql = await query({

@@ -5,7 +5,13 @@ import { useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import fetchData from '@/lib/fetch';
 import { SwalLoading } from '@/app/components/alert';
-import { MdArrowRight, MdCheck, MdEdit } from 'react-icons/md';
+import {
+  MdArrowBackIos,
+  MdArrowForwardIos,
+  MdArrowRight,
+  MdCheck,
+  MdEdit,
+} from 'react-icons/md';
 import TableDetail from './tableDetail';
 import { useRouter } from 'next/navigation';
 
@@ -16,9 +22,19 @@ export default function Table() {
   const [dataTableDetail, setDataTableDetail] = useState(null);
   const [activeBidang, setActiveBidang] = useState('');
   const [editingRow, setEditingRow] = useState(null);
+  const [pengaturan, setPengaturan] = useState([]);
 
   const getData = useCallback(async () => {
     SwalLoading('Memuat data...');
+
+    const { data: dataPengaturan } = await fetchData(
+      '/api/pengaturan',
+      'POST',
+      { a: 'waktu' }
+    );
+
+    dataPengaturan && setPengaturan(dataPengaturan);
+
     const { data } = await fetchData('/api/realisasi', 'POST', {
       a: 'getBidang',
       data: id,
@@ -37,6 +53,15 @@ export default function Table() {
     data && setDataTableDetail(data);
     Swal.close();
   }, []);
+
+  const isBuka =
+    pengaturan.length > 0
+      ? [
+          pengaturan[0].isTahap1_buka,
+          pengaturan[0].isTahap2_buka,
+          pengaturan[0].isTahap3_buka,
+        ]
+      : [];
 
   const updatePenyaluran = useCallback(
     async (tahap, kode_bidang, kode_opd, penyaluran) => {
@@ -59,7 +84,7 @@ export default function Table() {
 
   useEffect(() => {
     getData();
-  }, [getData]);
+  }, [getData, dataTableDetail]);
 
   return (
     <>
@@ -70,14 +95,14 @@ export default function Table() {
               <tr>
                 <th>No</th>
                 <th>Bidang</th>
-                <th className="text-right">Penyaluran Tahap ini</th>
+                {/* <th className="text-right">Penyaluran Tahap ini</th> */}
                 <th className="text-right">Anggaran</th>
                 <th className="text-right">Realisasi</th>
-                <th className="text-right">Sisa Kas</th>
+                <th className="text-right">Sisa</th>
                 <th className="text-right">Persentase</th>
                 <th className="text-right">
                   <button onClick={() => router.back()} className="btn btn-sm">
-                    Kembali
+                    <MdArrowBackIos /> Kembali
                   </button>
                 </th>
               </tr>
@@ -86,12 +111,12 @@ export default function Table() {
               {dataTable.map((item, key) => (
                 <tr
                   key={key}
-                  onDoubleClick={() => setEditingRow(item.kode_bidang)}
-                  className={`cursor-pointer ${item?.penyaluran ? '' : 'text-error'}`}
+                  // onDoubleClick={() => setEditingRow(item.kode_bidang)}
+                  // className={`cursor-pointer ${item?.penyaluran ? '' : 'text-error'}`}
                 >
                   <td>{key + 1}</td>
                   <td>{item?.bidang || 'N/A'}</td>
-                  <td className="text-right">
+                  {/* <td className="text-right">
                     {editingRow === item.kode_bidang ? (
                       <input
                         className="input input-sm max-w-50"
@@ -109,7 +134,7 @@ export default function Table() {
                     ) : (
                       item?.penyaluran.toLocaleString('id-ID') || '-'
                     )}
-                  </td>
+                  </td> */}
                   <td className="text-right">
                     {item?.rencana_anggaran.toLocaleString('id-ID') || '-'}
                   </td>
@@ -117,20 +142,20 @@ export default function Table() {
                     {item?.realisasi.toLocaleString('id-ID') || '-'}
                   </td>
                   <td className="text-right">
-                    {(item?.penyaluran - item?.realisasi).toLocaleString(
+                    {(item?.rencana_anggaran - item?.realisasi).toLocaleString(
                       'id-ID'
                     ) || '-'}
                   </td>
                   <td className="text-right">
                     {(
-                      (item?.realisasi / item?.penyaluran) *
+                      (item?.realisasi / item?.rencana_anggaran) *
                       100
                     ).toLocaleString('id-ID', { maximumFractionDigits: 2 }) ||
                       '-'}
                   </td>
                   <td className="text-right">
                     <div className="join">
-                      {editingRow === item.kode_bidang ? (
+                      {/* {editingRow === item.kode_bidang ? (
                         <button
                           className="btn join-item btn-square btn-ghost"
                           onClick={() => setEditingRow(null)}
@@ -144,15 +169,19 @@ export default function Table() {
                         >
                           <MdEdit />
                         </button>
-                      )}
+                      )} */}
                       <button
-                        className="btn join-item btn-square btn-ghost"
+                        className="btn join-item btn-sm"
                         onClick={() => {
-                          setActiveBidang(item?.bidang);
+                          setActiveBidang({
+                            kode: item?.kode_bidang,
+                            bidang: item?.bidang,
+                          });
                           getDataDetail(id, item?.kode_bidang);
                         }}
                       >
-                        <MdArrowRight className="text-3xl" />
+                        <span>Detail</span>
+                        <MdArrowForwardIos />
                       </button>
                     </div>
                   </td>
@@ -167,6 +196,8 @@ export default function Table() {
           row={dataTableDetail}
           setRow={setDataTableDetail}
           bidang={activeBidang}
+          getData={getDataDetail}
+          isBuka={isBuka[id - 1]}
         />
       )}
     </>

@@ -18,7 +18,7 @@ export default function Waktu() {
   const getData = useCallback(async () => {
     setLoading(true);
     const { data } = await fetchData('/api/pengaturan', 'POST', { a: 'waktu' });
-    data && setDataWaktu(data[0]);
+    data && setDataWaktu(data[0] || []);
     setLoading(false);
   }, []);
 

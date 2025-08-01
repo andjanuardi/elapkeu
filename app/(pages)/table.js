@@ -26,7 +26,7 @@ export default function Table() {
   return isLoading ? (
     <div className="skeleton h-70 col-span-4"></div>
   ) : (
-    <div className="card  bg-base-100 card-sm shadow-sm col-span-4">
+    <div className="card  bg-base-100 card-sm shadow-sm md: col-span-2 lg:col-span-4">
       <div className="card-body">
         <table className="table">
           <thead>

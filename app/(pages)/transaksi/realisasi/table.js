@@ -4,7 +4,7 @@ import { tahap } from '@/models/staticData';
 import { SwalLoading, SwalSuccess } from '@/app/components/alert';
 import { SkeletonTable } from '@/app/components/skeleton';
 import fetchData from '@/lib/fetch';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   RiCheckboxCircleFill,
   RiCloseCircleFill,
@@ -19,16 +19,26 @@ import {
 import Swal from 'sweetalert2';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { MdModeEdit } from 'react-icons/md';
+import { MdArrowForward, MdArrowForwardIos, MdModeEdit } from 'react-icons/md';
+import { getTanggalJam } from '@/lib/func';
 
 export default function TableTahap({ session }) {
   const isAdmin = session.level <= 1;
   const [row, setRow] = useState([]);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const [pengaturan, setPengaturan] = useState([]);
 
   const getData = useCallback(async () => {
     setLoading(true);
+    const { data: dataPengaturan } = await fetchData(
+      '/api/pengaturan',
+      'POST',
+      { a: 'waktu' }
+    );
+
+    dataPengaturan && setPengaturan(dataPengaturan);
+
     const { data } = await fetchData('/api/realisasi', 'POST', {
       a: 'getTahap',
     });
@@ -75,6 +85,7 @@ export default function TableTahap({ session }) {
                 <th>Realisasi Total</th>
                 <th className="w-0 text-center">Persentase</th>
                 {!isAdmin && <th className="w-0 text-center">Status</th>}
+                <th className="text-center">Batas Upload</th>
                 <th className="w-0 text-right">
                   <div className="join">
                     <button className="join-item btn" onClick={() => refresh()}>
@@ -99,6 +110,15 @@ export default function TableTahap({ session }) {
                   ? (parseFloat(realisasi) / parseFloat(data?.anggaran)) * 100
                   : '-';
 
+                const isBuka =
+                  pengaturan.length > 0
+                    ? [
+                        pengaturan[0].isTahap1_buka,
+                        pengaturan[0].isTahap2_buka,
+                        pengaturan[0].isTahap3_buka,
+                      ]
+                    : [];
+
                 return (
                   <tr key={key}>
                     <td>Tahap {t}</td>
@@ -113,9 +133,24 @@ export default function TableTahap({ session }) {
                         <Status stat={data ? data?.status : -1} />
                       </td>
                     )}
+                    <td className="text-center">
+                      {t === 1 &&
+                        getTanggalJam(
+                          new Date(pengaturan.map((item) => item.batas_tahap1))
+                        )}
+                      {t === 2 &&
+                        getTanggalJam(
+                          new Date(pengaturan.map((item) => item.batas_tahap2))
+                        )}
+                      {t === 3 &&
+                        getTanggalJam(
+                          new Date(pengaturan.map((item) => item.batas_tahap3))
+                        )}
+                    </td>
+
                     <td className="text-right">
                       <div className="join">
-                        {!isAdmin && (
+                        {!isAdmin && isBuka[t - 1] === 1 && (
                           <div
                             className="tooltip tooltip-left"
                             data-tip="Upload"
@@ -128,18 +163,17 @@ export default function TableTahap({ session }) {
                             </Link>
                           </div>
                         )}
-
                         {data && (
                           <div className="tooltip tooltip-left" data-tip="Ubah">
                             <Link
                               href={`${pathname}/detail/${t}`}
                               className="btn btn-sm"
                             >
-                              <MdModeEdit />
+                              Detail <MdArrowForwardIos />
                             </Link>
                           </div>
                         )}
-                        {data && (
+                        {data && isBuka[t - 1] === 1 && (
                           <div
                             className="tooltip tooltip-left"
                             data-tip="Hapus"

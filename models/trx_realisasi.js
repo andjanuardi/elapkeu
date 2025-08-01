@@ -77,12 +77,13 @@ export async function insertUpload(data) {
     'tahap',
     'tahun',
     'kode_user',
+    'kode_bidang',
   ];
 
   // Bentuk query
   const { kode_opd } = await getSession();
 
-  const placeholders = data.map(() => '(?,?,?,?,?,?,?)').join(',');
+  const placeholders = data.map(() => '(?,?,?,?,?,?,?,?)').join(',');
 
   const values = data.flatMap((item) => [
     kode_opd,
@@ -92,6 +93,7 @@ export async function insertUpload(data) {
     item.tahap,
     item.tahun,
     item.kode_user,
+    item.kode_bidang,
   ]);
 
   const sql = await query({
@@ -182,6 +184,17 @@ export async function delTahap(data) {
   const sql = await query({
     query: `DELETE FROM ${table} WHERE kode_opd=? AND tahap=? AND  tahun=?`,
     values: data,
+  });
+
+  return sql;
+}
+
+export async function delInvalid(data) {
+  const { tahun, kode_opd } = await getSession();
+
+  const sql = await query({
+    query: `DELETE FROM ${table} WHERE kode_opd=? AND tahap=? AND  tahun=? AND kode_bidang=? AND output IS NULL`,
+    values: [kode_opd, data.tahap, tahun, data.kode_bidang],
   });
 
   return sql;

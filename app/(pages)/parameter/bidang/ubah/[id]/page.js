@@ -36,13 +36,12 @@ export default function Ubah() {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const kode = formData.get('kode');
     const bidang = formData.get('bidang');
 
     try {
       const response = await fetchData('/api/bidang', 'POST', {
         a: 'ubah',
-        data: [kode, bidang, id],
+        data: [id, bidang, id],
       });
 
       if (response.status) {
@@ -59,23 +58,7 @@ export default function Ubah() {
   return (
     <form className="flex flex-col gap-4" onSubmit={(e) => submit(e)}>
       <h1 className="font-bold">Ubah bidang</h1>
-      <fieldset className="fieldset">
-        <legend className="fieldset-legend">Kode Bidang</legend>
-        <PatternFormat
-          format="#.##"
-          pattern="\d\.\d{2}"
-          mask={'_'}
-          className="input validator w-full join-item"
-          placeholder="Masukkan Kode Bidang"
-          value={initData.kode}
-          name="kode"
-          required
-        />
-        <p className="label italic">
-          Kode harus sama dengan Kode Bidang pada Aplikasi SIPD
-        </p>
-        <div className="validator-hint m-0 hidden">Tidak boleh kosong</div>
-      </fieldset>
+
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Nama Bidang</legend>
         <input

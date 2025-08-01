@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 172.18.0.3
--- Waktu pembuatan: 29 Jul 2025 pada 08.40
+-- Waktu pembuatan: 01 Agu 2025 pada 06.44
 -- Versi server: 10.3.39-MariaDB-1:10.3.39+maria~ubu2004
 -- Versi PHP: 8.2.29
 
@@ -91,6 +91,25 @@ INSERT INTO `ref_bidang` (`kode`, `bidang`) VALUES
 ('7.01', 'KECAMATAN'),
 ('8.01', 'KESATUAN BANGSA DAN POLITIK'),
 ('9.01', 'KEKHUSUSAN ACEH');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `ref_bidang_sg`
+--
+
+CREATE TABLE `ref_bidang_sg` (
+  `kode` int(200) NOT NULL,
+  `bidang` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data untuk tabel `ref_bidang_sg`
+--
+
+INSERT INTO `ref_bidang_sg` (`kode`, `bidang`) VALUES
+(2, 'BIDANG KESEHATAN'),
+(1, 'BIDANG PENDIDIKAN');
 
 -- --------------------------------------------------------
 
@@ -917,14 +936,6 @@ CREATE TABLE `ref_pejabat` (
   `jabatan` text NOT NULL,
   `aktif` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Dumping data untuk tabel `ref_pejabat`
---
-
-INSERT INTO `ref_pejabat` (`kode`, `kode_opd`, `nama`, `nip`, `pangkat`, `golongan`, `jabatan`, `aktif`) VALUES
-(8, '1.01.0.00.0.00.01.0000', 'Andri Januardi, S.Kom', '199201192020121006', 'Penata Muda Tingkat I', 'III/b', 'Penelaah Teknis Kebijakan', 1),
-(12, '1.01.0.00.0.00.01.0000', 'RIsfan Yani, S.T', '200009012025061002', 'Penata Muda', 'III/a', 'Pranata Komputer Ahli Pertama', 1);
 
 -- --------------------------------------------------------
 
@@ -4838,11 +4849,21 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`kode`, `nama`, `nip`, `jabatan`, `kode_opd`, `password`, `email`, `level`, `log`) VALUES
-(1, 'Super Admin', '000000000000000000', 'Administrator', '2.16.2.20.2.21.03.0000', '21232f297a57a5a743894a0e4a801fc3', 'super_admin@elapkeu.com', 0, '-'),
-(7, 'Admin BPKD', '111111111111111111', 'Admin Kabupaten', '5.02.0.00.0.00.05.0000', '21232f297a57a5a743894a0e4a801fc3', 'admin@elapkeu.com', 1, '-'),
-(8, 'Admin Disdik', '222222222222222222', 'Admin OPD', '1.01.0.00.0.00.01.0000', '21232f297a57a5a743894a0e4a801fc3', 'admin_disdik@elapkeu.com', 2, '-'),
-(9, 'Operator Disdik', '222222222222222222', 'Operator', '1.01.0.00.0.00.01.0000', '50ac30d9f12601fd112aecbc560d1cea', 'op_disdik@elapkeu.com', 3, '-'),
-(10, 'Admin Dinkes', '555555555555555555', 'Admin ', '1.02.0.00.0.00.01.0000', '21232f297a57a5a743894a0e4a801fc3', 'admin_dinkes@elapkeu.com', 2, '-');
+(1, 'Super Admin', '000000000000000000', 'Administrator', '2.16.2.20.2.21.03.0000', '1b3231655cebb7a1f783eddf27d254ca', 'super_admin@elapkeu.com', 0, '-');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `trx_penyaluran`
+--
+
+CREATE TABLE `trx_penyaluran` (
+  `kode` int(11) NOT NULL,
+  `kode_bidang` int(11) NOT NULL,
+  `tahun` year(4) NOT NULL,
+  `tahap` int(11) NOT NULL,
+  `nilai` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -4865,7 +4886,8 @@ CREATE TABLE `trx_realisasi` (
   `ket_anggaran` text DEFAULT NULL,
   `ket_perben` text DEFAULT NULL,
   `keterangan` text DEFAULT NULL,
-  `penyaluran` double NOT NULL DEFAULT 0
+  `penyaluran` double NOT NULL DEFAULT 0,
+  `kode_bidang` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -4881,12 +4903,21 @@ CREATE TABLE `t_pengaturan` (
   `batas_tahap3` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Dumping data untuk tabel `t_pengaturan`
---
+-- --------------------------------------------------------
 
-INSERT INTO `t_pengaturan` (`tahun`, `batas_tahap1`, `batas_tahap2`, `batas_tahap3`) VALUES
-('2025', '2025-04-17 04:00:00', '2025-08-31 23:59:59', '2025-12-31 23:59:59');
+--
+-- Stand-in struktur untuk tampilan `v_batas_waktu`
+-- (Lihat di bawah untuk tampilan aktual)
+--
+CREATE TABLE `v_batas_waktu` (
+`tahun` year(4)
+,`batas_tahap1` datetime
+,`batas_tahap2` datetime
+,`batas_tahap3` datetime
+,`isTahap1_buka` int(1)
+,`isTahap2_buka` int(1)
+,`isTahap3_buka` int(1)
+);
 
 -- --------------------------------------------------------
 
@@ -4959,8 +4990,8 @@ CREATE TABLE `v_klasifikasi` (
 CREATE TABLE `v_laporan_rincian` (
 `kode_opd` varchar(200)
 ,`tahun` year(4)
-,`kode_bidang` varchar(401)
-,`bidang` varchar(250)
+,`kode_bidang` int(11)
+,`bidang` varchar(200)
 ,`opd` text
 ,`kode_program` varchar(401)
 ,`program` mediumtext
@@ -5010,6 +5041,21 @@ CREATE TABLE `v_pejabat` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in struktur untuk tampilan `v_penyaluran`
+-- (Lihat di bawah untuk tampilan aktual)
+--
+CREATE TABLE `v_penyaluran` (
+`kode` int(11)
+,`kode_bidang` int(11)
+,`bidang` varchar(200)
+,`tahap` int(11)
+,`tahun` year(4)
+,`nilai` double
+);
+
+-- --------------------------------------------------------
+
+--
 -- Stand-in struktur untuk tampilan `v_program`
 -- (Lihat di bawah untuk tampilan aktual)
 --
@@ -5026,8 +5072,8 @@ CREATE TABLE `v_program` (
 --
 CREATE TABLE `v_realisasi` (
 `kode` bigint(200)
-,`kode_bidang` varchar(401)
-,`bidang` varchar(250)
+,`kode_bidang` int(11)
+,`bidang` varchar(200)
 ,`kode_opd` varchar(200)
 ,`opd` text
 ,`kode_program` varchar(401)
@@ -5061,8 +5107,8 @@ CREATE TABLE `v_realisasi` (
 -- (Lihat di bawah untuk tampilan aktual)
 --
 CREATE TABLE `v_realisasi_bidang` (
-`kode_bidang` varchar(401)
-,`bidang` varchar(250)
+`kode_bidang` int(11)
+,`bidang` varchar(200)
 ,`kode_opd` varchar(200)
 ,`opd` text
 ,`rencana_anggaran` double
@@ -5081,7 +5127,7 @@ CREATE TABLE `v_realisasi_bidang` (
 CREATE TABLE `v_realisasi_detail` (
 `kode` bigint(200)
 ,`kode_subkegiatan` varchar(200)
-,`bidang` varchar(250)
+,`bidang` varchar(200)
 ,`penyaluran` double
 ,`subkegiatan` mediumtext
 ,`uraian_output` mediumtext
@@ -5093,7 +5139,7 @@ CREATE TABLE `v_realisasi_detail` (
 ,`tahap` int(200)
 ,`tahun` year(4)
 ,`kode_opd` varchar(200)
-,`kode_bidang` varchar(401)
+,`kode_bidang` int(11)
 ,`status` int(11)
 ,`status_data` int(1)
 );
@@ -5108,8 +5154,8 @@ CREATE TABLE `v_realisasi_rekap` (
 `kode1` decimal(65,0)
 ,`kode2` decimal(65,0)
 ,`kode3` decimal(65,0)
-,`kode_bidang` varchar(401)
-,`bidang` varchar(250)
+,`kode_bidang` int(11)
+,`bidang` varchar(200)
 ,`penyaluran_1` double
 ,`penyaluran_2` double
 ,`penyaluran_3` double
@@ -5204,6 +5250,13 @@ ALTER TABLE `ref_bidang`
   ADD PRIMARY KEY (`kode`);
 
 --
+-- Indeks untuk tabel `ref_bidang_sg`
+--
+ALTER TABLE `ref_bidang_sg`
+  ADD PRIMARY KEY (`kode`),
+  ADD UNIQUE KEY `bidang_sg` (`bidang`);
+
+--
 -- Indeks untuk tabel `ref_kegiatan`
 --
 ALTER TABLE `ref_kegiatan`
@@ -5254,6 +5307,12 @@ ALTER TABLE `tbl_users`
   ADD UNIQUE KEY `unik_email` (`email`);
 
 --
+-- Indeks untuk tabel `trx_penyaluran`
+--
+ALTER TABLE `trx_penyaluran`
+  ADD PRIMARY KEY (`kode`);
+
+--
 -- Indeks untuk tabel `trx_realisasi`
 --
 ALTER TABLE `trx_realisasi`
@@ -5270,6 +5329,12 @@ ALTER TABLE `t_pengaturan`
 --
 
 --
+-- AUTO_INCREMENT untuk tabel `ref_bidang_sg`
+--
+ALTER TABLE `ref_bidang_sg`
+  MODIFY `kode` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT untuk tabel `ref_pejabat`
 --
 ALTER TABLE `ref_pejabat`
@@ -5279,13 +5344,28 @@ ALTER TABLE `ref_pejabat`
 -- AUTO_INCREMENT untuk tabel `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `kode` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `kode` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT untuk tabel `trx_penyaluran`
+--
+ALTER TABLE `trx_penyaluran`
+  MODIFY `kode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT untuk tabel `trx_realisasi`
 --
 ALTER TABLE `trx_realisasi`
-  MODIFY `kode` bigint(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1585;
+  MODIFY `kode` bigint(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2534;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur untuk view `v_batas_waktu`
+--
+DROP TABLE IF EXISTS `v_batas_waktu`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_batas_waktu`  AS SELECT `t_pengaturan`.`tahun` AS `tahun`, `t_pengaturan`.`batas_tahap1` AS `batas_tahap1`, `t_pengaturan`.`batas_tahap2` AS `batas_tahap2`, `t_pengaturan`.`batas_tahap3` AS `batas_tahap3`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap1` THEN 1 ELSE 0 END AS `isTahap1_buka`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap2` THEN 1 ELSE 0 END AS `isTahap2_buka`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap3` THEN 1 ELSE 0 END AS `isTahap3_buka` FROM `t_pengaturan` ;
 
 -- --------------------------------------------------------
 
@@ -5344,6 +5424,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_pejab
 -- --------------------------------------------------------
 
 --
+-- Struktur untuk view `v_penyaluran`
+--
+DROP TABLE IF EXISTS `v_penyaluran`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_penyaluran`  AS SELECT `trx_penyaluran`.`kode` AS `kode`, `trx_penyaluran`.`kode_bidang` AS `kode_bidang`, `ref_bidang_sg`.`bidang` AS `bidang`, `trx_penyaluran`.`tahap` AS `tahap`, `trx_penyaluran`.`tahun` AS `tahun`, `trx_penyaluran`.`nilai` AS `nilai` FROM (`trx_penyaluran` left join `ref_bidang_sg` on(`trx_penyaluran`.`kode_bidang` = `ref_bidang_sg`.`kode`)) ORDER BY `trx_penyaluran`.`tahap` ASC ;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur untuk view `v_program`
 --
 DROP TABLE IF EXISTS `v_program`;
@@ -5357,7 +5446,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_progr
 --
 DROP TABLE IF EXISTS `v_realisasi`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_realisasi`  AS SELECT `trx_realisasi`.`kode` AS `kode`, `v_klasifikasi`.`kode_bidang` AS `kode_bidang`, `v_klasifikasi`.`bidang` AS `bidang`, `trx_realisasi`.`kode_opd` AS `kode_opd`, `ref_opd`.`opd` AS `opd`, `v_klasifikasi`.`kode_program` AS `kode_program`, `v_klasifikasi`.`program` AS `program`, `v_klasifikasi`.`kode_kegiatan` AS `kode_kegiatan`, `v_klasifikasi`.`kegiatan` AS `kegiatan`, `trx_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_klasifikasi`.`subkegiatan` AS `subkegiatan`, `trx_realisasi`.`rencana_anggaran` AS `rencana_anggaran`, `trx_realisasi`.`rencana_output` AS `rencana_output`, `trx_realisasi`.`realisasi` AS `realisasi`, `trx_realisasi`.`output` AS `output`, `v_klasifikasi`.`satuan` AS `satuan`, `v_klasifikasi`.`indikator` AS `uraian_output`, `trx_realisasi`.`tahap` AS `tahap`, `trx_realisasi`.`tahun` AS `tahun`, `trx_realisasi`.`ket_anggaran` AS `ket_anggaran`, `trx_realisasi`.`ket_perben` AS `ket_perben`, `trx_realisasi`.`keterangan` AS `keterangan`, `trx_realisasi`.`penyaluran` AS `penyaluran`, `trx_realisasi`.`kode_user` AS `kode_user`, `tbl_users`.`nama` AS `nama`, `trx_realisasi`.`status` AS `status`, if(`trx_realisasi`.`status` = 1,2,if(`trx_realisasi`.`output` is not null and `trx_realisasi`.`rencana_output` is not null and `trx_realisasi`.`ket_anggaran` is null and `trx_realisasi`.`ket_perben` is null and `v_klasifikasi`.`subkegiatan` is not null,1,0)) AS `status_data` FROM (((`trx_realisasi` left join `ref_opd` on(`trx_realisasi`.`kode_opd` = `ref_opd`.`kode`)) left join `v_klasifikasi` on(`trx_realisasi`.`kode_subkegiatan` = `v_klasifikasi`.`kode_subkegiatan`)) left join `tbl_users` on(`trx_realisasi`.`kode_user` = `tbl_users`.`kode`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_realisasi`  AS SELECT `trx_realisasi`.`kode` AS `kode`, `trx_realisasi`.`kode_bidang` AS `kode_bidang`, `ref_bidang_sg`.`bidang` AS `bidang`, `trx_realisasi`.`kode_opd` AS `kode_opd`, `ref_opd`.`opd` AS `opd`, `v_klasifikasi`.`kode_program` AS `kode_program`, `v_klasifikasi`.`program` AS `program`, `v_klasifikasi`.`kode_kegiatan` AS `kode_kegiatan`, `v_klasifikasi`.`kegiatan` AS `kegiatan`, `trx_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_klasifikasi`.`subkegiatan` AS `subkegiatan`, `trx_realisasi`.`rencana_anggaran` AS `rencana_anggaran`, `trx_realisasi`.`rencana_output` AS `rencana_output`, `trx_realisasi`.`realisasi` AS `realisasi`, `trx_realisasi`.`output` AS `output`, `v_klasifikasi`.`satuan` AS `satuan`, `v_klasifikasi`.`indikator` AS `uraian_output`, `trx_realisasi`.`tahap` AS `tahap`, `trx_realisasi`.`tahun` AS `tahun`, `trx_realisasi`.`ket_anggaran` AS `ket_anggaran`, `trx_realisasi`.`ket_perben` AS `ket_perben`, `trx_realisasi`.`keterangan` AS `keterangan`, `trx_realisasi`.`penyaluran` AS `penyaluran`, `trx_realisasi`.`kode_user` AS `kode_user`, `tbl_users`.`nama` AS `nama`, `trx_realisasi`.`status` AS `status`, if(`trx_realisasi`.`status` = 1,2,if(`trx_realisasi`.`output` is not null and `trx_realisasi`.`rencana_output` is not null and `trx_realisasi`.`ket_anggaran` is null and `trx_realisasi`.`ket_perben` is null and `v_klasifikasi`.`subkegiatan` is not null,1,0)) AS `status_data` FROM ((((`trx_realisasi` left join `ref_opd` on(`trx_realisasi`.`kode_opd` = `ref_opd`.`kode`)) left join `v_klasifikasi` on(`trx_realisasi`.`kode_subkegiatan` = `v_klasifikasi`.`kode_subkegiatan`)) left join `tbl_users` on(`trx_realisasi`.`kode_user` = `tbl_users`.`kode`)) left join `ref_bidang_sg` on(`trx_realisasi`.`kode_bidang` = `ref_bidang_sg`.`kode`)) ;
 
 -- --------------------------------------------------------
 

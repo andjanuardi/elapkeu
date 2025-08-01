@@ -1,36 +1,51 @@
-"use client";
+'use client';
 
-import { SwalError, SwalSuccess } from "@/app/components/alert";
-import { getSession } from "@/app/components/auth";
-import md5 from "md5";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { MdEmail } from "react-icons/md";
+import { SwalError, SwalSuccess } from '@/app/components/alert';
+import { getSession } from '@/app/components/auth';
+import fetchData from '@/lib/fetch';
+import md5 from 'md5';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
+import { MdEmail } from 'react-icons/md';
 
-import { RiLockPasswordFill, RiLoginBoxLine, RiUserFill } from "react-icons/ri";
-import Swal from "sweetalert2";
+import { RiLockPasswordFill, RiLoginBoxLine, RiUserFill } from 'react-icons/ri';
+import Swal from 'sweetalert2';
 
 export default function FormLogin() {
   const ta = new Date();
   const router = useRouter();
+
   async function handleSubmit(e) {
     e.preventDefault();
+
     const formData = new FormData(e.target);
 
     const loginData = {
-      user: formData.get("email"),
-      pass: md5(formData.get("password")),
-      tahun: formData.get("ta"),
+      user: formData.get('email'),
+      pass: md5(formData.get('password')),
+      tahun: formData.get('ta'),
       redirect: false,
     };
 
-    const login = await signIn("credentials", loginData);
+    const login = await signIn('credentials', loginData);
     if (login?.error) {
-      SwalError(() => {}, "Email atau password salah.");
+      SwalError(() => {}, 'Email atau password salah.');
     } else {
-      SwalSuccess(() => router.push("/"), "Selamat Datang");
+      checkBatasWaktu();
+
+      SwalSuccess(() => router.push('/'), 'Selamat Datang');
     }
   }
+
+  const checkBatasWaktu = useCallback(async () => {
+    const { data } = await fetchData('/api/pengaturan', 'POST', { a: 'waktu' });
+    if (data && data.length === 0) {
+      const { data } = await fetchData('/api/pengaturan', 'POST', {
+        a: 'resetWaktu',
+      });
+    }
+  }, []);
 
   return (
     <form className="flex flex-col gap-2 py-2" onSubmit={handleSubmit}>
@@ -78,8 +93,8 @@ export default function FormLogin() {
         className="text-xs italic self-end link no-underline w-fit  "
         onClick={() =>
           Swal.fire(
-            "Lupa Kata Sandi",
-            "Untuk mendapatkan kata sandi yang baru silahkan hubungin administrator di BPKD Kab. Simeulue "
+            'Lupa Kata Sandi',
+            'Untuk mendapatkan kata sandi yang baru silahkan hubungin administrator di BPKD Kab. Simeulue '
           )
         }
       >

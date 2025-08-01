@@ -59,8 +59,6 @@ export default function Tambah({ session }) {
     levelLabel.filter((item, index) => index === 6),
   ];
 
-  console.log(levelList[session.level]);
-
   return (
     <form className="flex flex-col " onSubmit={(e) => submit(e)}>
       <h1 className="font-bold">Tambah Penguna</h1>
