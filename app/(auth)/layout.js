@@ -31,7 +31,7 @@ export default async function RootLayout({ children }) {
         className={`${font.className} antialiased  h-dvh flex flex-col min-h-dvh `}
       >
         <div id="content" className="flex-1 flex  ">
-          <div className="flex-1 inset-shadow-sm  hidden md:flex  place-content-center place-items-center  bg-video relative  overflow-hidden min-h-full">
+          <div className="flex-1 inset-shadow-sm  hidden sm:flex  place-content-center place-items-center  bg-video relative  overflow-hidden min-h-full">
             <video
               autoPlay
               muted
@@ -50,7 +50,7 @@ export default async function RootLayout({ children }) {
               </span>
             </div>
           </div>
-          <div className="p-16 min-h-full  bg-white min-w-lg   ">
+          <div className="lg:p-16 p-10 min-h-full  w-full md:w-fit bg-white    ">
             {children}
           </div>
         </div>

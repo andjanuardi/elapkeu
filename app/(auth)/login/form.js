@@ -48,7 +48,7 @@ export default function FormLogin() {
   }, []);
 
   return (
-    <form className="flex flex-col gap-2 py-2" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-2 py-2 " onSubmit={handleSubmit}>
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Email pengguna</legend>
         <label className="input validator w-full">

@@ -70,7 +70,7 @@ export default function Indikator() {
           {dataIndikator.map((item, key) => (
             <div
               key={key}
-              className="card bg-base-100 card-sm shadow-sm max-h-fit"
+              className="card bg-base-100 card-sm shadow-sm max-h-fit "
             >
               <div className="card-body place-content-center ">
                 <div className=" flex  gap-2 items-center place-content-center ">

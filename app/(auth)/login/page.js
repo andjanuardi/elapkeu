@@ -3,7 +3,7 @@ import FormLogin from './form';
 
 export default async function Login() {
   return (
-    <div className="flex flex-col gap-2 place-content-center h-full  ">
+    <div className="flex flex-col gap-2 place-content-center h-full   ">
       <div className="flex  place-content-between place-items-center">
         <Image
           src="/assets/img/logo.png"
@@ -26,6 +26,7 @@ export default async function Login() {
       <div className="flex flex-col text-sm place-content-center w-full text-center mt-4">
         <span className="font-semibold">Badan Pengelolaan Keuangan Daerah</span>
         <span className="italic">Versi 1.0 @ 2025</span>
+        <small>Programmer : Andri Januardi, S.Kom</small>
       </div>
     </div>
   );
