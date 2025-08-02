@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import ReactDOMServer from 'react-dom/server';
 
 export function SwalError(func = () => {}, errorText = '') {
   Swal.fire(
@@ -31,5 +32,18 @@ export function SwalLoading(text = 'Loading...') {
     showConfirmButton: false,
     allowEscapeKey: false,
     allowOutsideClick: false,
+  });
+}
+
+export function SwalCostum(html = <></>) {
+  Swal.fire({
+    html: ReactDOMServer.renderToString(html),
+    // background: '#ffffff00',
+    // backdrop: '#ffffff70',
+    showConfirmButton: true,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    confirmButtonText: 'Kembali',
+    width: '50rem',
   });
 }

@@ -33,7 +33,7 @@ export async function selectByColumns(columns, value, limit = null) {
     values = [];
   }
 
-  if (level > 1) {
+  if (level === 2 || level === 3) {
     sqlQuery += ` AND kode_opd=?`;
     values.push(kode_opd);
   }

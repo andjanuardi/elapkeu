@@ -19,6 +19,7 @@ export default function ControlLaporan({ session }) {
   const [dataTable, setDataTable] = useState(null);
   const [dataPenyaluran, setDataPenyaluran] = useState(null);
   const [showPenyaluran, setShowPenyaluran] = useState(true);
+  const [showKeterangan, setShowKeterangan] = useState(true);
 
   const getData = useCallback(async () => {
     SwalLoading('Memuat Data...');
@@ -26,7 +27,10 @@ export default function ControlLaporan({ session }) {
     penyalurandata && setDataPenyaluran(penyalurandata);
 
     const { data } = await fetchData('/api/laporan/rincian', 'POST', {
-      kode_opd: session.level <= 1 ? opd?.kode || opd.value : session.kode_opd,
+      kode_opd:
+        session.level <= 1 || session.level >= 4
+          ? opd?.kode || opd.value
+          : session.kode_opd,
       kode_bidang: bidang?.kode || bidang.value,
     });
     data && setDataTable(data);
@@ -56,25 +60,26 @@ export default function ControlLaporan({ session }) {
             <p className="label italic">Masukkan Nama Bidang</p>
             <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
           </fieldset>
-          {session.level <= 1 && (
-            <fieldset className="fieldset">
-              <legend className="fieldset-legend">Pilih OPD</legend>
-              <ListPicker
-                semua={true}
-                url={'/api/opd'}
-                className="input w-full validator"
-                labelIndex={1}
-                placeholder="Cari OPD..."
-                required
-                defaultValue=""
-                onItemSelected={(e) => setOpd(e)}
-              />
-              <p className="label italic">Masukkan nama OPD</p>
-              <div className="validator-hint mt-0 hidden">
-                Tidak boleh kosong
-              </div>
-            </fieldset>
-          )}
+          {session.level <= 1 ||
+            (session.level >= 4 && (
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Pilih OPD</legend>
+                <ListPicker
+                  semua={true}
+                  url={'/api/opd'}
+                  className="input w-full validator"
+                  labelIndex={1}
+                  placeholder="Cari OPD..."
+                  required
+                  defaultValue=""
+                  onItemSelected={(e) => setOpd(e)}
+                />
+                <p className="label italic">Masukkan nama OPD</p>
+                <div className="validator-hint mt-0 hidden">
+                  Tidak boleh kosong
+                </div>
+              </fieldset>
+            ))}
 
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Pilih Penandatangan</legend>
@@ -105,17 +110,30 @@ export default function ControlLaporan({ session }) {
       )}
       {dataTable && (
         <div className="w-full flex place-content-between items-center bg-white px-2 print:hidden">
-          <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-2">
-            <label className="label">
-              <input
-                type="checkbox"
-                checked={showPenyaluran}
-                className="toggle"
-                onChange={() => setShowPenyaluran(!showPenyaluran)}
-              />
-              Tampilkan Penyaluran
-            </label>
-          </fieldset>
+          <div className="flex gap-2">
+            <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-2">
+              <label className="label">
+                <input
+                  type="checkbox"
+                  checked={showPenyaluran}
+                  className="toggle"
+                  onChange={() => setShowPenyaluran(!showPenyaluran)}
+                />
+                Tampilkan Penyaluran
+              </label>
+            </fieldset>
+            <fieldset className="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-2">
+              <label className="label">
+                <input
+                  type="checkbox"
+                  checked={showKeterangan}
+                  className="toggle"
+                  onChange={() => setShowKeterangan(!showKeterangan)}
+                />
+                Tampilkan Keterangan
+              </label>
+            </fieldset>
+          </div>
           <div className="join  p-4">
             <button
               type="button"
@@ -148,6 +166,7 @@ export default function ControlLaporan({ session }) {
             activeBidang={bidang.bidang}
             tanggal={tanggal}
             dataPenyaluran={dataPenyaluran}
+            showKeterangan={showKeterangan}
           />
         )}
       </div>
@@ -156,11 +175,11 @@ export default function ControlLaporan({ session }) {
 }
 
 export function Table({
-  isPrint = false,
   data = [],
   activeOpd,
   pejabat,
   showPenyaluran = true,
+  showKeterangan = true,
   activeBidang,
   tanggal = null,
   tahun,
@@ -365,6 +384,7 @@ export function Table({
                   <td className="text-right">
                     {persen_sisa?.toLocaleString('id-ID') || '-'}
                   </td>
+                  {showKeterangan && <td></td>}
                 </tr>
                 <RowKegiatan
                   kegiatan={kegiatan}
@@ -446,6 +466,7 @@ export function Table({
                   <td className="text-right">
                     {persen_sisa?.toLocaleString('id-ID') || '-'}
                   </td>
+                  {showKeterangan && <td></td>}
                 </tr>
                 <RowSubKegiatan
                   tableData={tableData}
@@ -530,6 +551,34 @@ export function Table({
                     maximumFractionDigits: 2,
                   }) || '-'}
                 </td>
+                {showKeterangan && (
+                  <td>
+                    <div className="flex flex-col gap-2">
+                      {item.keterangan && (
+                        <div>
+                          {item?.keterangan}
+                          <br />
+                          <small>(Catatan Bidang Akutansi)</small>
+                        </div>
+                      )}
+
+                      {item.ket_perben && (
+                        <div>
+                          {item?.ket_perben}
+                          <br />
+                          <small>(Catatan Bidang Perbendahaaran)</small>
+                        </div>
+                      )}
+                      {item.ket_anggaran && (
+                        <div>
+                          {item?.ket_anggaran}
+                          <br />
+                          <small>(Catatan Bidang Anggaran)</small>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             );
           })}
@@ -604,6 +653,7 @@ export function Table({
               maximumFractionDigits: 2,
             })}
           </td>
+          {showKeterangan && <td></td>}
         </tr>
       </>
     );
@@ -628,6 +678,7 @@ export function Table({
               {showPenyaluran && <th colSpan={5}>PENYALURAN</th>}
               <th colSpan={9}>REALISASI</th>
               <th colSpan={3}>SISA</th>
+              {showKeterangan && <th rowSpan={3}>KETERANGAN</th>}
             </tr>
             <tr>
               <th rowSpan={2}>ANGGARAN</th>
@@ -741,9 +792,9 @@ export function Table({
                           ) || '-'}
                         </td>
                         <td className="text-right">
-                          {persen_penyaluran?.toLocaleString('id-ID', {
+                          {(persen_penyaluran || 0).toLocaleString('id-ID', {
                             maximumFractionDigits: 2,
-                          }) || '-'}
+                          })}
                         </td>
                       </>
                     )}
@@ -776,6 +827,8 @@ export function Table({
                     <td className="text-right">
                       {persen_sisa?.toLocaleString('id-ID') || '-'}
                     </td>
+
+                    {showKeterangan && <td></td>}
                   </tr>
                   <RowOpd
                     opd={opd}

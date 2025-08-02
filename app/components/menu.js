@@ -157,13 +157,21 @@ const menuOperatorOPD = [
   menu[3],
 ];
 
-const menuVerifikator = [menu[0], menu[3]];
+const menuVerifikator = [
+  menu[0],
+  {
+    ...menu[2],
+    child: [menu[2].child[1]],
+  },
+  menu[3],
+];
 
 export const menuByLevel = [
   menuSuperAdmin,
   menuAdministrator,
   menuAdminOPD,
   menuOperatorOPD,
+  menuVerifikator,
   menuVerifikator,
 ];
 

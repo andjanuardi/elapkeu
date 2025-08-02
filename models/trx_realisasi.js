@@ -13,21 +13,33 @@ export async function selectAll() {
   return sql;
 }
 
-export async function getTahap() {
+export async function getTahap(opd = null) {
   const { tahun, kode_opd, level } = await getSession();
+  let queryStr = '';
+  let activeOPD = kode_opd;
+  if (level <= 1 || level >= 4) {
+    queryStr = `SELECT * FROM  v_tahap WHERE tahun=? AND status >= 2 `;
+    if (opd) {
+      queryStr = `SELECT * FROM v_tahap WHERE tahun=?  AND kode_opd=? AND status >= 2`;
+      activeOPD = opd;
+    }
+  }
+  if (level === 2 || level === 3) {
+    queryStr = `SELECT * FROM v_tahap WHERE tahun=? AND kode_opd=?`;
+  }
   const sql = await query({
-    query: `SELECT * FROM v_tahap WHERE tahun=? ${level <= 1 ? '' : 'AND kode_opd=?'}`,
-    values: [tahun, kode_opd],
+    query: queryStr,
+    values: [tahun, activeOPD],
   });
   return sql;
 }
 
-export async function getBidang(tahap) {
+export async function getBidang(data) {
   const { tahun, kode_opd, level } = await getSession();
 
   const sql = await query({
-    query: `SELECT * FROM v_realisasi_bidang WHERE tahun=? AND tahap=? ${level <= 1 ? '' : 'AND kode_opd=?'}`,
-    values: [tahun, tahap, kode_opd],
+    query: `SELECT * FROM v_realisasi_bidang WHERE tahun=? AND tahap=? AND kode_opd=?`,
+    values: [tahun, data.tahap, data.kode_opd],
   });
   return sql;
 }
@@ -43,9 +55,13 @@ export async function getRincian() {
 
 export async function getByTahap(data) {
   const { tahun, kode_opd, level } = await getSession();
+  let activeOPD = kode_opd;
+  if (data.kode_opd) {
+    activeOPD = data.kode_opd;
+  }
   const sql = await query({
-    query: `SELECT * FROM v_realisasi_detail WHERE tahap=? AND tahun=?  AND kode_bidang=?  ${level <= 1 ? '' : 'AND kode_opd=?'}`,
-    values: [data.tahap, tahun, data.bidang, kode_opd],
+    query: `SELECT * FROM v_realisasi_detail WHERE tahap=? AND tahun=?  AND kode_bidang=?  AND kode_opd=?`,
+    values: [data.tahap, tahun, data.bidang, activeOPD],
   });
   return sql || [];
 }
@@ -123,6 +139,18 @@ export async function updateOne(data) {
   });
 
   return sql;
+}
+
+export async function updateStatus(data) {
+  const { kode_opd, tahun } = await getSession();
+  let activeOPD = kode_opd;
+  if (data.kode_opd) {
+    activeOPD = data.kode_opd;
+  }
+  await query({
+    query: `UPDATE ${table} SET status=? WHERE tahap=? AND tahun=? AND kode_opd=?`,
+    values: [data.status, data.tahap, tahun, activeOPD],
+  });
 }
 
 export async function updatePenyaluran(data) {

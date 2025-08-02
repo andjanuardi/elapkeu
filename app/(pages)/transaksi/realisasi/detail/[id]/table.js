@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import fetchData from '@/lib/fetch';
 import { SwalLoading } from '@/app/components/alert';
@@ -15,14 +15,18 @@ import {
 import TableDetail from './tableDetail';
 import { useRouter } from 'next/navigation';
 
-export default function Table() {
+export default function Table({ level }) {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+
+  const activeOPD = searchParams.has('opd') ? searchParams.get('opd') : null;
   const router = useRouter();
   const [dataTable, setDataTable] = useState([]);
   const [dataTableDetail, setDataTableDetail] = useState(null);
   const [activeBidang, setActiveBidang] = useState('');
   const [editingRow, setEditingRow] = useState(null);
   const [pengaturan, setPengaturan] = useState([]);
+  const [dataOPD, setDataOPD] = useState({});
 
   const getData = useCallback(async () => {
     SwalLoading('Memuat data...');
@@ -35,24 +39,34 @@ export default function Table() {
 
     dataPengaturan && setPengaturan(dataPengaturan);
 
+    const { data: opd } = await fetchData('/api/opd', 'POST', {
+      a: 'cari',
+      data: activeOPD,
+    });
+
+    opd && setDataOPD(opd[0]);
+
     const { data } = await fetchData('/api/realisasi', 'POST', {
       a: 'getBidang',
-      data: id,
+      data: { tahap: id, kode_opd: activeOPD },
     });
     data && setDataTable(data);
     Swal.close();
-  }, [id]);
+  }, [id, activeOPD]);
 
-  const getDataDetail = useCallback(async (tahap, bidang) => {
-    SwalLoading('Memuat data...');
-    const { data } = await fetchData('/api/realisasi', 'POST', {
-      a: 'getByTahap',
-      data: { tahap, bidang },
-    });
+  const getDataDetail = useCallback(
+    async (tahap, bidang) => {
+      SwalLoading('Memuat data...');
+      const { data } = await fetchData('/api/realisasi', 'POST', {
+        a: 'getByTahap',
+        data: { tahap, bidang, kode_opd: activeOPD },
+      });
 
-    data && setDataTableDetail(data);
-    Swal.close();
-  }, []);
+      data && setDataTableDetail(data);
+      Swal.close();
+    },
+    [activeOPD]
+  );
 
   const isBuka =
     pengaturan.length > 0
@@ -93,12 +107,11 @@ export default function Table() {
           <table className="table">
             <thead>
               <tr>
-                <th>No</th>
+                <th className="w-0">No</th>
                 <th>Bidang</th>
                 {/* <th className="text-right">Penyaluran Tahap ini</th> */}
                 <th className="text-right">Anggaran</th>
                 <th className="text-right">Realisasi</th>
-                <th className="text-right">Sisa</th>
                 <th className="text-right">Persentase</th>
                 <th className="text-right">
                   <button onClick={() => router.back()} className="btn btn-sm">
@@ -108,6 +121,11 @@ export default function Table() {
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td colSpan={6} className="font-bold">
+                  {dataOPD.opd}
+                </td>
+              </tr>
               {dataTable.map((item, key) => (
                 <tr
                   key={key}
@@ -140,11 +158,6 @@ export default function Table() {
                   </td>
                   <td className="text-right">
                     {item?.realisasi.toLocaleString('id-ID') || '-'}
-                  </td>
-                  <td className="text-right">
-                    {(item?.rencana_anggaran - item?.realisasi).toLocaleString(
-                      'id-ID'
-                    ) || '-'}
                   </td>
                   <td className="text-right">
                     {(
@@ -198,6 +211,8 @@ export default function Table() {
           bidang={activeBidang}
           getData={getDataDetail}
           isBuka={isBuka[id - 1]}
+          dataOPD={dataOPD}
+          level={level}
         />
       )}
     </>

@@ -16,6 +16,7 @@ import {
   getBidang,
   updatePenyaluran,
   delInvalid,
+  updateStatus,
 } from '@/models/trx_realisasi';
 
 export async function GET() {
@@ -52,6 +53,10 @@ export async function POST(request) {
       case 'ubahitem':
         sql = await updateOne(data);
         break;
+      case 'updatestatus':
+        await updateStatus(data);
+
+        break;
       case 'ubahpenyaluran':
         await updatePenyaluran(data);
         break;
@@ -65,7 +70,7 @@ export async function POST(request) {
         sql = await selectByColl('kode', data);
         break;
       case 'getTahap':
-        sql = await getTahap();
+        sql = await getTahap(data);
         break;
       case 'getBidang':
         sql = await getBidang(data);

@@ -25,5 +25,6 @@ export const levelLabel = [
   { id: 1, label: 'Administrator' },
   { id: 2, label: 'Admin OPD' },
   { id: 3, label: 'Operator OPD' },
-  // { id: 4, label: 'Verifikator' },
+  { id: 4, label: 'Verifikator Bidang Perbendaharaan' },
+  { id: 5, label: 'Verifikator Bidang Anggaran' },
 ];

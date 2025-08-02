@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 172.18.0.3
--- Waktu pembuatan: 01 Agu 2025 pada 06.44
+-- Waktu pembuatan: 02 Agu 2025 pada 18.16
 -- Versi server: 10.3.39-MariaDB-1:10.3.39+maria~ubu2004
 -- Versi PHP: 8.2.29
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Prosedur
 --
-CREATE DEFINER=`root`@`%` PROCEDURE `UpdatePenyaluran` (IN `p_tahap` VARCHAR(200), IN `p_tahun` INT, IN `p_kode_opd` VARCHAR(200), IN `p_kode_bidang` VARCHAR(200), IN `p_penyaluran` DOUBLE)   BEGIN
+CREATE  PROCEDURE `UpdatePenyaluran` (IN `p_tahap` VARCHAR(200), IN `p_tahun` INT, IN `p_kode_opd` VARCHAR(200), IN `p_kode_bidang` VARCHAR(200), IN `p_penyaluran` DOUBLE)   BEGIN
    UPDATE `trx_realisasi` SET penyaluran=p_penyaluran WHERE SUBSTRING_INDEX(`kode_subkegiatan`, '.', 2)=p_kode_bidang AND tahun=p_tahun AND tahap=p_tahap AND kode_opd=p_kode_opd;
 END$$
 
@@ -936,6 +936,13 @@ CREATE TABLE `ref_pejabat` (
   `jabatan` text NOT NULL,
   `aktif` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data untuk tabel `ref_pejabat`
+--
+
+INSERT INTO `ref_pejabat` (`kode`, `kode_opd`, `nama`, `nip`, `pangkat`, `golongan`, `jabatan`, `aktif`) VALUES
+(13, '1.01.0.00.0.00.01.0000', 'INTAN ZURAIDA, S.E', '111111111111111111', 'Juru Muda', 'I/a', 'jabatan', 1);
 
 -- --------------------------------------------------------
 
@@ -4849,7 +4856,7 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`kode`, `nama`, `nip`, `jabatan`, `kode_opd`, `password`, `email`, `level`, `log`) VALUES
-(1, 'Super Admin', '000000000000000000', 'Administrator', '2.16.2.20.2.21.03.0000', '1b3231655cebb7a1f783eddf27d254ca', 'super_admin@elapkeu.com', 0, '-');
+(1, 'Super Admin', '000000000000000000', 'Administrator', '2.16.2.20.2.21.03.0000', '1b3231655cebb7a1f783eddf27d254ca', 'super_admin@elapkeu', 0, '-');
 
 -- --------------------------------------------------------
 
@@ -4902,6 +4909,13 @@ CREATE TABLE `t_pengaturan` (
   `batas_tahap2` datetime NOT NULL,
   `batas_tahap3` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data untuk tabel `t_pengaturan`
+--
+
+INSERT INTO `t_pengaturan` (`tahun`, `batas_tahap1`, `batas_tahap2`, `batas_tahap3`) VALUES
+('2025', '2025-04-30 23:59:59', '2025-08-31 23:59:59', '2025-12-31 23:59:59');
 
 -- --------------------------------------------------------
 
@@ -5001,6 +5015,8 @@ CREATE TABLE `v_laporan_rincian` (
 ,`subkegiatan` mediumtext
 ,`uraian_output` mediumtext
 ,`satuan` varchar(200)
+,`ket_anggaran` text
+,`ket_perben` text
 ,`rencana_anggaran` double
 ,`rencana_output` varchar(200)
 ,`penyaluran_1` double
@@ -5140,6 +5156,9 @@ CREATE TABLE `v_realisasi_detail` (
 ,`tahun` year(4)
 ,`kode_opd` varchar(200)
 ,`kode_bidang` int(11)
+,`ket_anggaran` text
+,`ket_perben` text
+,`keterangan` text
 ,`status` int(11)
 ,`status_data` int(1)
 );
@@ -5338,13 +5357,13 @@ ALTER TABLE `ref_bidang_sg`
 -- AUTO_INCREMENT untuk tabel `ref_pejabat`
 --
 ALTER TABLE `ref_pejabat`
-  MODIFY `kode` bigint(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `kode` bigint(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT untuk tabel `tbl_users`
 --
 ALTER TABLE `tbl_users`
-  MODIFY `kode` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `kode` int(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT untuk tabel `trx_penyaluran`
@@ -5356,7 +5375,7 @@ ALTER TABLE `trx_penyaluran`
 -- AUTO_INCREMENT untuk tabel `trx_realisasi`
 --
 ALTER TABLE `trx_realisasi`
-  MODIFY `kode` bigint(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2534;
+  MODIFY `kode` bigint(200) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3108;
 
 -- --------------------------------------------------------
 
@@ -5365,7 +5384,7 @@ ALTER TABLE `trx_realisasi`
 --
 DROP TABLE IF EXISTS `v_batas_waktu`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_batas_waktu`  AS SELECT `t_pengaturan`.`tahun` AS `tahun`, `t_pengaturan`.`batas_tahap1` AS `batas_tahap1`, `t_pengaturan`.`batas_tahap2` AS `batas_tahap2`, `t_pengaturan`.`batas_tahap3` AS `batas_tahap3`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap1` THEN 1 ELSE 0 END AS `isTahap1_buka`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap2` THEN 1 ELSE 0 END AS `isTahap2_buka`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap3` THEN 1 ELSE 0 END AS `isTahap3_buka` FROM `t_pengaturan` ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_batas_waktu`  AS SELECT `t_pengaturan`.`tahun` AS `tahun`, `t_pengaturan`.`batas_tahap1` AS `batas_tahap1`, `t_pengaturan`.`batas_tahap2` AS `batas_tahap2`, `t_pengaturan`.`batas_tahap3` AS `batas_tahap3`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap1` THEN 1 ELSE 0 END AS `isTahap1_buka`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap2` THEN 1 ELSE 0 END AS `isTahap2_buka`, CASE WHEN curdate() <= `t_pengaturan`.`batas_tahap3` THEN 1 ELSE 0 END AS `isTahap3_buka` FROM `t_pengaturan` ;
 
 -- --------------------------------------------------------
 
@@ -5374,7 +5393,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_batas
 --
 DROP TABLE IF EXISTS `v_dahsboard_indikator`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_dahsboard_indikator`  AS SELECT `v_realisasi_bidang`.`kode_opd` AS `kode_opd`, `v_realisasi_bidang`.`tahun` AS `tahun`, sum(`v_realisasi_bidang`.`rencana_anggaran`) AS `rencana_anggaran`, sum(`v_realisasi_bidang`.`penyaluran`) AS `penyaluran`, sum(`v_realisasi_bidang`.`realisasi`) AS `realisasi` FROM `v_realisasi_bidang` GROUP BY `v_realisasi_bidang`.`kode_opd`, `v_realisasi_bidang`.`tahun` ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_dahsboard_indikator`  AS SELECT `v_realisasi_bidang`.`kode_opd` AS `kode_opd`, `v_realisasi_bidang`.`tahun` AS `tahun`, sum(`v_realisasi_bidang`.`rencana_anggaran`) AS `rencana_anggaran`, sum(`v_realisasi_bidang`.`penyaluran`) AS `penyaluran`, sum(`v_realisasi_bidang`.`realisasi`) AS `realisasi` FROM `v_realisasi_bidang` GROUP BY `v_realisasi_bidang`.`kode_opd`, `v_realisasi_bidang`.`tahun` ;
 
 -- --------------------------------------------------------
 
@@ -5383,7 +5402,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_dahsb
 --
 DROP TABLE IF EXISTS `v_dahsboard_pertahap`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_dahsboard_pertahap`  AS SELECT `v_realisasi_bidang`.`kode_opd` AS `kode_opd`, `v_realisasi_bidang`.`tahap` AS `tahap`, `v_realisasi_bidang`.`tahun` AS `tahun`, sum(`v_realisasi_bidang`.`rencana_anggaran`) AS `rencana_anggaran`, sum(`v_realisasi_bidang`.`penyaluran`) AS `penyaluran`, sum(`v_realisasi_bidang`.`realisasi`) AS `realisasi` FROM `v_realisasi_bidang` GROUP BY `v_realisasi_bidang`.`kode_opd`, `v_realisasi_bidang`.`tahun`, `v_realisasi_bidang`.`tahap` ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_dahsboard_pertahap`  AS SELECT `v_realisasi_bidang`.`kode_opd` AS `kode_opd`, `v_realisasi_bidang`.`tahap` AS `tahap`, `v_realisasi_bidang`.`tahun` AS `tahun`, sum(`v_realisasi_bidang`.`rencana_anggaran`) AS `rencana_anggaran`, sum(`v_realisasi_bidang`.`penyaluran`) AS `penyaluran`, sum(`v_realisasi_bidang`.`realisasi`) AS `realisasi` FROM `v_realisasi_bidang` GROUP BY `v_realisasi_bidang`.`kode_opd`, `v_realisasi_bidang`.`tahun`, `v_realisasi_bidang`.`tahap` ;
 
 -- --------------------------------------------------------
 
@@ -5392,7 +5411,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_dahsb
 --
 DROP TABLE IF EXISTS `v_kegiatan`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_kegiatan`  AS SELECT concat(`ref_bidang`.`kode`,'.',substring_index(`ref_kegiatan`.`kode`,'.',-3)) AS `kode`, `ref_kegiatan`.`kegiatan` AS `kegiatan` FROM (`ref_kegiatan` join `ref_bidang`) WHERE `ref_kegiatan`.`kode` like '%x%'union select `ref_kegiatan`.`kode` AS `kode`,`ref_kegiatan`.`kegiatan` AS `kegiatan` from `ref_kegiatan` where `ref_kegiatan`.`kode`  not like '%x%' order by `kode`  ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_kegiatan`  AS SELECT concat(`ref_bidang`.`kode`,'.',substring_index(`ref_kegiatan`.`kode`,'.',-3)) AS `kode`, `ref_kegiatan`.`kegiatan` AS `kegiatan` FROM (`ref_kegiatan` join `ref_bidang`) WHERE `ref_kegiatan`.`kode` like '%x%'union select `ref_kegiatan`.`kode` AS `kode`,`ref_kegiatan`.`kegiatan` AS `kegiatan` from `ref_kegiatan` where `ref_kegiatan`.`kode`  not like '%x%' order by `kode`  ;
 
 -- --------------------------------------------------------
 
@@ -5401,7 +5420,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_kegia
 --
 DROP TABLE IF EXISTS `v_klasifikasi`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_klasifikasi`  AS SELECT substring_index(`v_subkegiatan`.`kode`,'.',1) AS `kode_urusan`, `ref_urusan`.`urusan` AS `urusan`, substring_index(`v_subkegiatan`.`kode`,'.',2) AS `kode_bidang`, `ref_bidang`.`bidang` AS `bidang`, substring_index(`v_subkegiatan`.`kode`,'.',3) AS `kode_program`, `v_program`.`program` AS `program`, substring_index(`v_subkegiatan`.`kode`,'.',5) AS `kode_kegiatan`, `v_kegiatan`.`kegiatan` AS `kegiatan`, `v_subkegiatan`.`kode` AS `kode_subkegiatan`, `v_subkegiatan`.`subkegiatan` AS `subkegiatan`, `v_subkegiatan`.`kinerja` AS `kinerja`, `v_subkegiatan`.`indikator` AS `indikator`, `v_subkegiatan`.`satuan` AS `satuan` FROM ((((`v_subkegiatan` left join `v_kegiatan` on(substring_index(`v_subkegiatan`.`kode`,'.',5) = `v_kegiatan`.`kode`)) left join `v_program` on(substring_index(`v_subkegiatan`.`kode`,'.',3) = `v_program`.`kode`)) left join `ref_bidang` on(substring_index(`v_subkegiatan`.`kode`,'.',2) = `ref_bidang`.`kode`)) left join `ref_urusan` on(substring_index(`v_subkegiatan`.`kode`,'.',1) = `ref_urusan`.`kode`)) ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_klasifikasi`  AS SELECT substring_index(`v_subkegiatan`.`kode`,'.',1) AS `kode_urusan`, `ref_urusan`.`urusan` AS `urusan`, substring_index(`v_subkegiatan`.`kode`,'.',2) AS `kode_bidang`, `ref_bidang`.`bidang` AS `bidang`, substring_index(`v_subkegiatan`.`kode`,'.',3) AS `kode_program`, `v_program`.`program` AS `program`, substring_index(`v_subkegiatan`.`kode`,'.',5) AS `kode_kegiatan`, `v_kegiatan`.`kegiatan` AS `kegiatan`, `v_subkegiatan`.`kode` AS `kode_subkegiatan`, `v_subkegiatan`.`subkegiatan` AS `subkegiatan`, `v_subkegiatan`.`kinerja` AS `kinerja`, `v_subkegiatan`.`indikator` AS `indikator`, `v_subkegiatan`.`satuan` AS `satuan` FROM ((((`v_subkegiatan` left join `v_kegiatan` on(substring_index(`v_subkegiatan`.`kode`,'.',5) = `v_kegiatan`.`kode`)) left join `v_program` on(substring_index(`v_subkegiatan`.`kode`,'.',3) = `v_program`.`kode`)) left join `ref_bidang` on(substring_index(`v_subkegiatan`.`kode`,'.',2) = `ref_bidang`.`kode`)) left join `ref_urusan` on(substring_index(`v_subkegiatan`.`kode`,'.',1) = `ref_urusan`.`kode`)) ;
 
 -- --------------------------------------------------------
 
@@ -5410,7 +5429,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_klasi
 --
 DROP TABLE IF EXISTS `v_laporan_rincian`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_laporan_rincian`  AS SELECT `v_realisasi_rekap`.`kode_opd` AS `kode_opd`, `v_realisasi_rekap`.`tahun` AS `tahun`, `v_realisasi_rekap`.`kode_bidang` AS `kode_bidang`, `v_realisasi_rekap`.`bidang` AS `bidang`, `v_realisasi_rekap`.`opd` AS `opd`, `v_realisasi_rekap`.`kode_program` AS `kode_program`, `v_realisasi_rekap`.`program` AS `program`, `v_realisasi_rekap`.`kode_kegiatan` AS `kode_kegiatan`, `v_realisasi_rekap`.`kegiatan` AS `kegiatan`, `v_realisasi_rekap`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_realisasi_rekap`.`subkegiatan` AS `subkegiatan`, `v_realisasi_rekap`.`uraian_output` AS `uraian_output`, `v_realisasi_rekap`.`satuan` AS `satuan`, `v_realisasi_rekap`.`rencana_anggaran` AS `rencana_anggaran`, `v_realisasi_rekap`.`rencana_output` AS `rencana_output`, `v_realisasi_rekap`.`penyaluran_1` AS `penyaluran_1`, `v_realisasi_rekap`.`penyaluran_2` AS `penyaluran_2`, `v_realisasi_rekap`.`penyaluran_3` AS `penyaluran_3`, `v_realisasi_rekap`.`realisasi_1` AS `realisasi_1`, `v_realisasi_rekap`.`output_1` AS `output_1`, `v_realisasi_rekap`.`realisasi_2` AS `realisasi_2`, `v_realisasi_rekap`.`output_2` AS `output_2`, `v_realisasi_rekap`.`realisasi_3` AS `realisasi_3`, `v_realisasi_rekap`.`output_3` AS `output_3`, `v_realisasi_rekap`.`realisasi_1`+ `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3` AS `jumlah_nilai`, `v_realisasi_rekap`.`output_1`+ `v_realisasi_rekap`.`output_2` + `v_realisasi_rekap`.`output_3` AS `jumlah_output`, (`v_realisasi_rekap`.`realisasi_1` + `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3`) / `v_realisasi_rekap`.`rencana_anggaran` * 100 AS `jumlah_persentase`, `v_realisasi_rekap`.`rencana_anggaran`- (`v_realisasi_rekap`.`realisasi_1` + `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3`) AS `sisa_nilai`, `v_realisasi_rekap`.`rencana_output`- (`v_realisasi_rekap`.`output_1` + `v_realisasi_rekap`.`output_2` + `v_realisasi_rekap`.`output_3`) AS `sisa_output`, (`v_realisasi_rekap`.`rencana_anggaran` - (`v_realisasi_rekap`.`realisasi_1` + `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3`)) / `v_realisasi_rekap`.`rencana_anggaran` * 100 AS `sisa_persentase` FROM `v_realisasi_rekap` ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_laporan_rincian`  AS SELECT `v_realisasi_rekap`.`kode_opd` AS `kode_opd`, `v_realisasi_rekap`.`tahun` AS `tahun`, `v_realisasi_rekap`.`kode_bidang` AS `kode_bidang`, `v_realisasi_rekap`.`bidang` AS `bidang`, `v_realisasi_rekap`.`opd` AS `opd`, `v_realisasi_rekap`.`kode_program` AS `kode_program`, `v_realisasi_rekap`.`program` AS `program`, `v_realisasi_rekap`.`kode_kegiatan` AS `kode_kegiatan`, `v_realisasi_rekap`.`kegiatan` AS `kegiatan`, `v_realisasi_rekap`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_realisasi_rekap`.`subkegiatan` AS `subkegiatan`, `v_realisasi_rekap`.`uraian_output` AS `uraian_output`, `v_realisasi_rekap`.`satuan` AS `satuan`, `v_realisasi_rekap`.`ket_anggaran` AS `ket_anggaran`, `v_realisasi_rekap`.`ket_perben` AS `ket_perben`, `v_realisasi_rekap`.`rencana_anggaran` AS `rencana_anggaran`, `v_realisasi_rekap`.`rencana_output` AS `rencana_output`, `v_realisasi_rekap`.`penyaluran_1` AS `penyaluran_1`, `v_realisasi_rekap`.`penyaluran_2` AS `penyaluran_2`, `v_realisasi_rekap`.`penyaluran_3` AS `penyaluran_3`, `v_realisasi_rekap`.`realisasi_1` AS `realisasi_1`, `v_realisasi_rekap`.`output_1` AS `output_1`, `v_realisasi_rekap`.`realisasi_2` AS `realisasi_2`, `v_realisasi_rekap`.`output_2` AS `output_2`, `v_realisasi_rekap`.`realisasi_3` AS `realisasi_3`, `v_realisasi_rekap`.`output_3` AS `output_3`, `v_realisasi_rekap`.`realisasi_1`+ `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3` AS `jumlah_nilai`, `v_realisasi_rekap`.`output_1`+ `v_realisasi_rekap`.`output_2` + `v_realisasi_rekap`.`output_3` AS `jumlah_output`, (`v_realisasi_rekap`.`realisasi_1` + `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3`) / `v_realisasi_rekap`.`rencana_anggaran` * 100 AS `jumlah_persentase`, `v_realisasi_rekap`.`rencana_anggaran`- (`v_realisasi_rekap`.`realisasi_1` + `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3`) AS `sisa_nilai`, `v_realisasi_rekap`.`rencana_output`- (`v_realisasi_rekap`.`output_1` + `v_realisasi_rekap`.`output_2` + `v_realisasi_rekap`.`output_3`) AS `sisa_output`, (`v_realisasi_rekap`.`rencana_anggaran` - (`v_realisasi_rekap`.`realisasi_1` + `v_realisasi_rekap`.`realisasi_2` + `v_realisasi_rekap`.`realisasi_3`)) / `v_realisasi_rekap`.`rencana_anggaran` * 100 AS `sisa_persentase` FROM `v_realisasi_rekap` ;
 
 -- --------------------------------------------------------
 
@@ -5419,7 +5438,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_lapor
 --
 DROP TABLE IF EXISTS `v_pejabat`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_pejabat`  AS SELECT `ref_pejabat`.`kode` AS `kode`, `ref_pejabat`.`kode_opd` AS `kode_opd`, `ref_pejabat`.`nama` AS `nama`, `ref_pejabat`.`nip` AS `nip`, `ref_pejabat`.`pangkat` AS `pangkat`, `ref_pejabat`.`golongan` AS `golongan`, `ref_pejabat`.`jabatan` AS `jabatan`, `ref_pejabat`.`aktif` AS `aktif`, `ref_opd`.`opd` AS `opd` FROM (`ref_pejabat` left join `ref_opd` on(`ref_pejabat`.`kode_opd` = `ref_opd`.`kode`)) ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_pejabat`  AS SELECT `ref_pejabat`.`kode` AS `kode`, `ref_pejabat`.`kode_opd` AS `kode_opd`, `ref_pejabat`.`nama` AS `nama`, `ref_pejabat`.`nip` AS `nip`, `ref_pejabat`.`pangkat` AS `pangkat`, `ref_pejabat`.`golongan` AS `golongan`, `ref_pejabat`.`jabatan` AS `jabatan`, `ref_pejabat`.`aktif` AS `aktif`, `ref_opd`.`opd` AS `opd` FROM (`ref_pejabat` left join `ref_opd` on(`ref_pejabat`.`kode_opd` = `ref_opd`.`kode`)) ;
 
 -- --------------------------------------------------------
 
@@ -5428,7 +5447,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_pejab
 --
 DROP TABLE IF EXISTS `v_penyaluran`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_penyaluran`  AS SELECT `trx_penyaluran`.`kode` AS `kode`, `trx_penyaluran`.`kode_bidang` AS `kode_bidang`, `ref_bidang_sg`.`bidang` AS `bidang`, `trx_penyaluran`.`tahap` AS `tahap`, `trx_penyaluran`.`tahun` AS `tahun`, `trx_penyaluran`.`nilai` AS `nilai` FROM (`trx_penyaluran` left join `ref_bidang_sg` on(`trx_penyaluran`.`kode_bidang` = `ref_bidang_sg`.`kode`)) ORDER BY `trx_penyaluran`.`tahap` ASC ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_penyaluran`  AS SELECT `trx_penyaluran`.`kode` AS `kode`, `trx_penyaluran`.`kode_bidang` AS `kode_bidang`, `ref_bidang_sg`.`bidang` AS `bidang`, `trx_penyaluran`.`tahap` AS `tahap`, `trx_penyaluran`.`tahun` AS `tahun`, `trx_penyaluran`.`nilai` AS `nilai` FROM (`trx_penyaluran` left join `ref_bidang_sg` on(`trx_penyaluran`.`kode_bidang` = `ref_bidang_sg`.`kode`)) ORDER BY `trx_penyaluran`.`tahap` ASC ;
 
 -- --------------------------------------------------------
 
@@ -5437,7 +5456,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_penya
 --
 DROP TABLE IF EXISTS `v_program`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_program`  AS SELECT concat(`ref_bidang`.`kode`,'.',substring_index(`ref_program`.`kode`,'.',-1)) AS `kode`, `ref_program`.`program` AS `program` FROM (`ref_program` join `ref_bidang`) WHERE `ref_program`.`kode` like '%x%'union select `ref_program`.`kode` AS `kode`,`ref_program`.`program` AS `program` from `ref_program` where `ref_program`.`kode`  not like '%x%' order by `kode`  ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_program`  AS SELECT concat(`ref_bidang`.`kode`,'.',substring_index(`ref_program`.`kode`,'.',-1)) AS `kode`, `ref_program`.`program` AS `program` FROM (`ref_program` join `ref_bidang`) WHERE `ref_program`.`kode` like '%x%'union select `ref_program`.`kode` AS `kode`,`ref_program`.`program` AS `program` from `ref_program` where `ref_program`.`kode`  not like '%x%' order by `kode`  ;
 
 -- --------------------------------------------------------
 
@@ -5446,7 +5465,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_progr
 --
 DROP TABLE IF EXISTS `v_realisasi`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_realisasi`  AS SELECT `trx_realisasi`.`kode` AS `kode`, `trx_realisasi`.`kode_bidang` AS `kode_bidang`, `ref_bidang_sg`.`bidang` AS `bidang`, `trx_realisasi`.`kode_opd` AS `kode_opd`, `ref_opd`.`opd` AS `opd`, `v_klasifikasi`.`kode_program` AS `kode_program`, `v_klasifikasi`.`program` AS `program`, `v_klasifikasi`.`kode_kegiatan` AS `kode_kegiatan`, `v_klasifikasi`.`kegiatan` AS `kegiatan`, `trx_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_klasifikasi`.`subkegiatan` AS `subkegiatan`, `trx_realisasi`.`rencana_anggaran` AS `rencana_anggaran`, `trx_realisasi`.`rencana_output` AS `rencana_output`, `trx_realisasi`.`realisasi` AS `realisasi`, `trx_realisasi`.`output` AS `output`, `v_klasifikasi`.`satuan` AS `satuan`, `v_klasifikasi`.`indikator` AS `uraian_output`, `trx_realisasi`.`tahap` AS `tahap`, `trx_realisasi`.`tahun` AS `tahun`, `trx_realisasi`.`ket_anggaran` AS `ket_anggaran`, `trx_realisasi`.`ket_perben` AS `ket_perben`, `trx_realisasi`.`keterangan` AS `keterangan`, `trx_realisasi`.`penyaluran` AS `penyaluran`, `trx_realisasi`.`kode_user` AS `kode_user`, `tbl_users`.`nama` AS `nama`, `trx_realisasi`.`status` AS `status`, if(`trx_realisasi`.`status` = 1,2,if(`trx_realisasi`.`output` is not null and `trx_realisasi`.`rencana_output` is not null and `trx_realisasi`.`ket_anggaran` is null and `trx_realisasi`.`ket_perben` is null and `v_klasifikasi`.`subkegiatan` is not null,1,0)) AS `status_data` FROM ((((`trx_realisasi` left join `ref_opd` on(`trx_realisasi`.`kode_opd` = `ref_opd`.`kode`)) left join `v_klasifikasi` on(`trx_realisasi`.`kode_subkegiatan` = `v_klasifikasi`.`kode_subkegiatan`)) left join `tbl_users` on(`trx_realisasi`.`kode_user` = `tbl_users`.`kode`)) left join `ref_bidang_sg` on(`trx_realisasi`.`kode_bidang` = `ref_bidang_sg`.`kode`)) ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_realisasi`  AS SELECT `trx_realisasi`.`kode` AS `kode`, `trx_realisasi`.`kode_bidang` AS `kode_bidang`, `ref_bidang_sg`.`bidang` AS `bidang`, `trx_realisasi`.`kode_opd` AS `kode_opd`, `ref_opd`.`opd` AS `opd`, `v_klasifikasi`.`kode_program` AS `kode_program`, `v_klasifikasi`.`program` AS `program`, `v_klasifikasi`.`kode_kegiatan` AS `kode_kegiatan`, `v_klasifikasi`.`kegiatan` AS `kegiatan`, `trx_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_klasifikasi`.`subkegiatan` AS `subkegiatan`, `trx_realisasi`.`rencana_anggaran` AS `rencana_anggaran`, `trx_realisasi`.`rencana_output` AS `rencana_output`, `trx_realisasi`.`realisasi` AS `realisasi`, `trx_realisasi`.`output` AS `output`, `v_klasifikasi`.`satuan` AS `satuan`, `v_klasifikasi`.`indikator` AS `uraian_output`, `trx_realisasi`.`tahap` AS `tahap`, `trx_realisasi`.`tahun` AS `tahun`, `trx_realisasi`.`ket_anggaran` AS `ket_anggaran`, `trx_realisasi`.`ket_perben` AS `ket_perben`, `trx_realisasi`.`keterangan` AS `keterangan`, `trx_realisasi`.`penyaluran` AS `penyaluran`, `trx_realisasi`.`kode_user` AS `kode_user`, `tbl_users`.`nama` AS `nama`, `trx_realisasi`.`status` AS `status`, if(`trx_realisasi`.`status` = 1,2,if(`trx_realisasi`.`output` is not null and `trx_realisasi`.`rencana_output` is not null and `v_klasifikasi`.`subkegiatan` is not null,1,0)) AS `status_data` FROM ((((`trx_realisasi` left join `ref_opd` on(`trx_realisasi`.`kode_opd` = `ref_opd`.`kode`)) left join `v_klasifikasi` on(`trx_realisasi`.`kode_subkegiatan` = `v_klasifikasi`.`kode_subkegiatan`)) left join `tbl_users` on(`trx_realisasi`.`kode_user` = `tbl_users`.`kode`)) left join `ref_bidang_sg` on(`trx_realisasi`.`kode_bidang` = `ref_bidang_sg`.`kode`)) ;
 
 -- --------------------------------------------------------
 
@@ -5455,7 +5474,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_reali
 --
 DROP TABLE IF EXISTS `v_realisasi_bidang`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_realisasi_bidang`  AS SELECT `v_realisasi`.`kode_bidang` AS `kode_bidang`, `v_realisasi`.`bidang` AS `bidang`, `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`opd` AS `opd`, sum(`v_realisasi`.`rencana_anggaran`) AS `rencana_anggaran`, sum(`v_realisasi`.`realisasi`) AS `realisasi`, max(`v_realisasi`.`penyaluran`) AS `penyaluran`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun` FROM `v_realisasi` GROUP BY `v_realisasi`.`tahun`, `v_realisasi`.`tahap`, `v_realisasi`.`kode_bidang` ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_realisasi_bidang`  AS SELECT `v_realisasi`.`kode_bidang` AS `kode_bidang`, `v_realisasi`.`bidang` AS `bidang`, `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`opd` AS `opd`, sum(`v_realisasi`.`rencana_anggaran`) AS `rencana_anggaran`, sum(`v_realisasi`.`realisasi`) AS `realisasi`, max(`v_realisasi`.`penyaluran`) AS `penyaluran`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun` FROM `v_realisasi` GROUP BY `v_realisasi`.`kode_opd`, `v_realisasi`.`tahun`, `v_realisasi`.`tahap`, `v_realisasi`.`kode_bidang` ;
 
 -- --------------------------------------------------------
 
@@ -5464,7 +5483,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_reali
 --
 DROP TABLE IF EXISTS `v_realisasi_detail`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_realisasi_detail`  AS SELECT `v_realisasi`.`kode` AS `kode`, `v_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_realisasi`.`bidang` AS `bidang`, `v_realisasi`.`penyaluran` AS `penyaluran`, `v_realisasi`.`subkegiatan` AS `subkegiatan`, `v_realisasi`.`uraian_output` AS `uraian_output`, `v_realisasi_rekap`.`rencana_anggaran` AS `rencana_anggaran`, `v_realisasi_rekap`.`rencana_output` AS `rencana_output`, `v_realisasi`.`realisasi` AS `realisasi`, `v_realisasi`.`output` AS `output`, `v_realisasi`.`satuan` AS `satuan`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun`, `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`kode_bidang` AS `kode_bidang`, `v_realisasi`.`status` AS `status`, `v_realisasi`.`status_data` AS `status_data` FROM (`v_realisasi` left join `v_realisasi_rekap` on(`v_realisasi_rekap`.`kode_subkegiatan` = `v_realisasi`.`kode_subkegiatan`)) ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_realisasi_detail`  AS SELECT `v_realisasi`.`kode` AS `kode`, `v_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_realisasi`.`bidang` AS `bidang`, `v_realisasi`.`penyaluran` AS `penyaluran`, `v_realisasi`.`subkegiatan` AS `subkegiatan`, `v_realisasi`.`uraian_output` AS `uraian_output`, `v_realisasi_rekap`.`rencana_anggaran` AS `rencana_anggaran`, `v_realisasi_rekap`.`rencana_output` AS `rencana_output`, `v_realisasi`.`realisasi` AS `realisasi`, `v_realisasi`.`output` AS `output`, `v_realisasi`.`satuan` AS `satuan`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun`, `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`kode_bidang` AS `kode_bidang`, `v_realisasi`.`ket_anggaran` AS `ket_anggaran`, `v_realisasi`.`ket_perben` AS `ket_perben`, `v_realisasi`.`keterangan` AS `keterangan`, `v_realisasi`.`status` AS `status`, `v_realisasi`.`status_data` AS `status_data` FROM (`v_realisasi` left join `v_realisasi_rekap` on(`v_realisasi_rekap`.`kode_subkegiatan` = `v_realisasi`.`kode_subkegiatan`)) ;
 
 -- --------------------------------------------------------
 
@@ -5473,7 +5492,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_reali
 --
 DROP TABLE IF EXISTS `v_realisasi_rekap`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_realisasi_rekap`  AS SELECT sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`kode` else NULL end) AS `kode1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`kode` else NULL end) AS `kode2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`kode` else NULL end) AS `kode3`, `v_realisasi`.`kode_bidang` AS `kode_bidang`, `v_realisasi`.`bidang` AS `bidang`, max(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`penyaluran` else 0 end) AS `penyaluran_1`, max(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`penyaluran` else 0 end) AS `penyaluran_2`, max(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`penyaluran` else 0 end) AS `penyaluran_3`, `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`opd` AS `opd`, `v_realisasi`.`kode_program` AS `kode_program`, `v_realisasi`.`program` AS `program`, `v_realisasi`.`kode_kegiatan` AS `kode_kegiatan`, `v_realisasi`.`kegiatan` AS `kegiatan`, `v_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_realisasi`.`subkegiatan` AS `subkegiatan`, max(`v_realisasi`.`rencana_anggaran`) AS `rencana_anggaran`, max(`v_realisasi`.`rencana_output`) AS `rencana_output`, sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`realisasi` else 0 end) AS `realisasi_1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`realisasi` else 0 end) AS `realisasi_2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`realisasi` else 0 end) AS `realisasi_3`, sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`output` else 0 end) AS `output_1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`output` else 0 end) AS `output_2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`output` else 0 end) AS `output_3`, `v_realisasi`.`satuan` AS `satuan`, `v_realisasi`.`uraian_output` AS `uraian_output`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun`, `v_realisasi`.`ket_anggaran` AS `ket_anggaran`, `v_realisasi`.`ket_perben` AS `ket_perben`, `v_realisasi`.`keterangan` AS `keterangan`, `v_realisasi`.`kode_user` AS `kode_user`, `v_realisasi`.`nama` AS `nama`, `v_realisasi`.`status` AS `status`, sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`status_data` else 0 end) AS `status_data_1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`status_data` else 0 end) AS `status_data_2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`status_data` else 0 end) AS `status_data_3` FROM `v_realisasi` GROUP BY `v_realisasi`.`kode_subkegiatan`, `v_realisasi`.`kode_opd`, `v_realisasi`.`tahun` ORDER BY `v_realisasi`.`kode_kegiatan` ASC ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_realisasi_rekap`  AS SELECT sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`kode` else NULL end) AS `kode1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`kode` else NULL end) AS `kode2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`kode` else NULL end) AS `kode3`, `v_realisasi`.`kode_bidang` AS `kode_bidang`, `v_realisasi`.`bidang` AS `bidang`, max(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`penyaluran` else 0 end) AS `penyaluran_1`, max(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`penyaluran` else 0 end) AS `penyaluran_2`, max(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`penyaluran` else 0 end) AS `penyaluran_3`, `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`opd` AS `opd`, `v_realisasi`.`kode_program` AS `kode_program`, `v_realisasi`.`program` AS `program`, `v_realisasi`.`kode_kegiatan` AS `kode_kegiatan`, `v_realisasi`.`kegiatan` AS `kegiatan`, `v_realisasi`.`kode_subkegiatan` AS `kode_subkegiatan`, `v_realisasi`.`subkegiatan` AS `subkegiatan`, max(`v_realisasi`.`rencana_anggaran`) AS `rencana_anggaran`, max(`v_realisasi`.`rencana_output`) AS `rencana_output`, sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`realisasi` else 0 end) AS `realisasi_1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`realisasi` else 0 end) AS `realisasi_2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`realisasi` else 0 end) AS `realisasi_3`, sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`output` else 0 end) AS `output_1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`output` else 0 end) AS `output_2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`output` else 0 end) AS `output_3`, `v_realisasi`.`satuan` AS `satuan`, `v_realisasi`.`uraian_output` AS `uraian_output`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun`, `v_realisasi`.`ket_anggaran` AS `ket_anggaran`, `v_realisasi`.`ket_perben` AS `ket_perben`, `v_realisasi`.`keterangan` AS `keterangan`, `v_realisasi`.`kode_user` AS `kode_user`, `v_realisasi`.`nama` AS `nama`, `v_realisasi`.`status` AS `status`, sum(case when `v_realisasi`.`tahap` = 1 then `v_realisasi`.`status_data` else 0 end) AS `status_data_1`, sum(case when `v_realisasi`.`tahap` = 2 then `v_realisasi`.`status_data` else 0 end) AS `status_data_2`, sum(case when `v_realisasi`.`tahap` = 3 then `v_realisasi`.`status_data` else 0 end) AS `status_data_3` FROM `v_realisasi` GROUP BY `v_realisasi`.`kode_subkegiatan`, `v_realisasi`.`kode_opd`, `v_realisasi`.`tahun` ORDER BY `v_realisasi`.`kode_kegiatan` ASC ;
 
 -- --------------------------------------------------------
 
@@ -5482,7 +5501,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_reali
 --
 DROP TABLE IF EXISTS `v_subkegiatan`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_subkegiatan`  AS SELECT concat(`ref_bidang`.`kode`,'.',substring_index(`ref_subkegiatan`.`kode`,'.',-4)) AS `kode`, `ref_subkegiatan`.`subkegiatan` AS `subkegiatan`, `ref_subkegiatan`.`kinerja` AS `kinerja`, `ref_subkegiatan`.`indikator` AS `indikator`, `ref_subkegiatan`.`satuan` AS `satuan` FROM (`ref_subkegiatan` join `ref_bidang`) WHERE `ref_subkegiatan`.`kode` like '%x%'union all select `ref_subkegiatan`.`kode` AS `kode`,`ref_subkegiatan`.`subkegiatan` AS `subkegiatan`,`ref_subkegiatan`.`kinerja` AS `kinerja`,`ref_subkegiatan`.`indikator` AS `indikator`,`ref_subkegiatan`.`satuan` AS `satuan` from `ref_subkegiatan` where `ref_subkegiatan`.`kode`  not like '%x%' order by `kode`  ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_subkegiatan`  AS SELECT concat(`ref_bidang`.`kode`,'.',substring_index(`ref_subkegiatan`.`kode`,'.',-4)) AS `kode`, `ref_subkegiatan`.`subkegiatan` AS `subkegiatan`, `ref_subkegiatan`.`kinerja` AS `kinerja`, `ref_subkegiatan`.`indikator` AS `indikator`, `ref_subkegiatan`.`satuan` AS `satuan` FROM (`ref_subkegiatan` join `ref_bidang`) WHERE `ref_subkegiatan`.`kode` like '%x%'union all select `ref_subkegiatan`.`kode` AS `kode`,`ref_subkegiatan`.`subkegiatan` AS `subkegiatan`,`ref_subkegiatan`.`kinerja` AS `kinerja`,`ref_subkegiatan`.`indikator` AS `indikator`,`ref_subkegiatan`.`satuan` AS `satuan` from `ref_subkegiatan` where `ref_subkegiatan`.`kode`  not like '%x%' order by `kode`  ;
 
 -- --------------------------------------------------------
 
@@ -5491,7 +5510,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_subke
 --
 DROP TABLE IF EXISTS `v_tahap`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_tahap`  AS SELECT `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`opd` AS `opd`, sum(`v_realisasi`.`rencana_anggaran`) AS `anggaran`, sum(`v_realisasi`.`realisasi`) AS `realisasi`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun`, if(count(0) = sum(`v_realisasi`.`status` = 1),2,if(count(0) = sum(`v_realisasi`.`output` is not null and `v_realisasi`.`rencana_output` is not null and `v_realisasi`.`ket_anggaran` is null and `v_realisasi`.`ket_perben` is null and `v_realisasi`.`subkegiatan` is not null),1,0)) AS `status` FROM `v_realisasi` GROUP BY `v_realisasi`.`tahap`, `v_realisasi`.`kode_opd`, `v_realisasi`.`tahun` ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_tahap`  AS SELECT `v_realisasi`.`kode_opd` AS `kode_opd`, `v_realisasi`.`opd` AS `opd`, sum(`v_realisasi`.`rencana_anggaran`) AS `anggaran`, sum(`v_realisasi`.`realisasi`) AS `realisasi`, `v_realisasi`.`tahap` AS `tahap`, `v_realisasi`.`tahun` AS `tahun`, if(count(0) = sum(`v_realisasi`.`status` = 2),3,if(count(0) = sum(`v_realisasi`.`status` = 1),2,if(count(0) = sum(`v_realisasi`.`output` is not null and `v_realisasi`.`rencana_output` is not null and `v_realisasi`.`subkegiatan` is not null),1,0))) AS `status` FROM `v_realisasi` GROUP BY `v_realisasi`.`tahap`, `v_realisasi`.`kode_opd`, `v_realisasi`.`tahun` ;
 
 -- --------------------------------------------------------
 
@@ -5500,7 +5519,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_tahap
 --
 DROP TABLE IF EXISTS `v_users`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_users`  AS SELECT `tbl_users`.`kode` AS `kode`, `tbl_users`.`nama` AS `nama`, `tbl_users`.`nip` AS `nip`, `tbl_users`.`jabatan` AS `jabatan`, `tbl_users`.`kode_opd` AS `kode_opd`, `tbl_users`.`password` AS `password`, `tbl_users`.`email` AS `email`, `tbl_users`.`level` AS `level`, `tbl_users`.`log` AS `log`, `ref_opd`.`opd` AS `opd` FROM (`tbl_users` left join `ref_opd` on(`ref_opd`.`kode` = `tbl_users`.`kode_opd`)) ORDER BY `tbl_users`.`level` ASC, `tbl_users`.`kode_opd` ASC ;
+CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v_users`  AS SELECT `tbl_users`.`kode` AS `kode`, `tbl_users`.`nama` AS `nama`, `tbl_users`.`nip` AS `nip`, `tbl_users`.`jabatan` AS `jabatan`, `tbl_users`.`kode_opd` AS `kode_opd`, `tbl_users`.`password` AS `password`, `tbl_users`.`email` AS `email`, `tbl_users`.`level` AS `level`, `tbl_users`.`log` AS `log`, `ref_opd`.`opd` AS `opd` FROM (`tbl_users` left join `ref_opd` on(`ref_opd`.`kode` = `tbl_users`.`kode_opd`)) ORDER BY `tbl_users`.`level` ASC, `tbl_users`.`kode_opd` ASC ;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
