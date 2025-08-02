@@ -15,6 +15,7 @@ const cookiesOptions = {
   callbackUrl: {
     name: `__Secure-next-auth.callback-url`,
     options: {
+      httpOnly: true,
       sameSite: 'none',
       path: '/',
       secure: true,
@@ -40,8 +41,8 @@ export async function loginDB(email, password) {
 }
 
 export const authOptions = {
-  cookies: {},
-  // cookies: {cookiesOptions},
+  // cookies: {},
+  cookies: cookiesOptions,
   providers: [
     CredentialsProvider({
       name: 'Credentials',

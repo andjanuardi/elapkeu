@@ -6,7 +6,7 @@ export default async function Login() {
     <div className="flex flex-col gap-2 place-content-center h-full  ">
       <div className="flex  place-content-between place-items-center">
         <Image
-          src="/img/logo.png"
+          src="/assets/img/logo.png"
           alt="Logo"
           width={50}
           height={100}

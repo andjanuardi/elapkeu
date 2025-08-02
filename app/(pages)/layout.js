@@ -3,7 +3,9 @@ import '@/app/loading.css';
 import Navbar from '@/app/components/navbar';
 import Menu from '@/app/components/menu';
 import { Poppins } from 'next/font/google';
-import { CekLogin } from '@/lib/func';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import { redirect } from 'next/navigation';
 
 const font = Poppins({
   subsets: ['latin'],
@@ -17,6 +19,11 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect('/login');
+  }
+
   return (
     <html lang="id">
       <body className={`${font.className} antialiased h-dvh`}>
