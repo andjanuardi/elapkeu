@@ -1,3 +1,4 @@
+import { protectPage } from '@/lib/db';
 import { tahap } from '@/models/staticData';
 import {
   del,
@@ -18,6 +19,7 @@ import {
 } from '@/models/trx_realisasi';
 
 export async function GET() {
+  await protectPage();
   try {
     const sql = await selectAll();
     return Response.json({ status: true, data: sql });
@@ -30,6 +32,7 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  await protectPage();
   try {
     const { a, data, limit } = await request.json();
     let sql = [];

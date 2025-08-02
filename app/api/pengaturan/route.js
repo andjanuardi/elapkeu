@@ -1,6 +1,9 @@
+import { protectPage } from '@/lib/db';
 import { getWaktu, resetWaktu, updateOne } from '@/models/ref_pengaturan';
 
 export async function POST(request) {
+  await protectPage();
+
   try {
     const { a, data } = await request.json();
     let sql = [];
