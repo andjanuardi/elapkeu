@@ -138,9 +138,12 @@ const menuAdminOPD = [
     ...menu[2],
     child: [menu[2].child[1]],
   },
-  ,
+
   menu[3],
-  menu[4],
+  {
+    ...menu[4],
+    child: [menu[4].child[0]],
+  },
 ];
 
 const menuOperatorOPD = [
