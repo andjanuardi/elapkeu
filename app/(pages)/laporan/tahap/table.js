@@ -77,26 +77,25 @@ export default function ControlLaporan({ session }) {
             <p className="label italic">Masukkan Nama Bidang</p>
             <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
           </fieldset>
-          {session.level <= 1 ||
-            (session.level >= 4 && (
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Pilih OPD</legend>
-                <ListPicker
-                  semua={true}
-                  url={'/api/opd'}
-                  className="input w-full validator"
-                  labelIndex={1}
-                  placeholder="Cari OPD..."
-                  required
-                  defaultValue=""
-                  onItemSelected={(e) => setOpd(e)}
-                />
-                <p className="label italic">Masukkan nama OPD</p>
-                <div className="validator-hint mt-0 hidden">
-                  Tidak boleh kosong
-                </div>
-              </fieldset>
-            ))}
+          {(session.level <= 1 || session.level >= 4) && (
+            <fieldset className="fieldset">
+              <legend className="fieldset-legend">Pilih OPD</legend>
+              <ListPicker
+                semua={true}
+                url={'/api/opd'}
+                className="input w-full validator"
+                labelIndex={1}
+                placeholder="Cari OPD..."
+                required
+                defaultValue=""
+                onItemSelected={(e) => setOpd(e)}
+              />
+              <p className="label italic">Masukkan nama OPD</p>
+              <div className="validator-hint mt-0 hidden">
+                Tidak boleh kosong
+              </div>
+            </fieldset>
+          )}
 
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Pilih Penandatangan</legend>
