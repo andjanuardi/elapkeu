@@ -24,7 +24,7 @@ export function InputDate({
     <>
       <label className="input validator w-full flex justify-between">
         <Datetime
-          dateFormat="DD MMMM YYYY"
+          dateFormat="DD/MM/YYYY"
           initialValue={new Date()}
           inputProps={{ required: { required }, className: 'w-full' }}
           timeFormat={false}
@@ -52,7 +52,8 @@ export function InputDateTime({
     <>
       <label className="input validator w-full flex justify-between ">
         <Datetime
-          dateFormat="DD MMMM YYYY"
+          dateFormat="DD/MM/YYYY"
+          timeFormat="HH:mm"
           initialValue={new Date(defaultValue)}
           inputProps={{
             required: { required },
