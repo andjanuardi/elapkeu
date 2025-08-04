@@ -24,10 +24,11 @@ export function InputDate({
     <>
       <label className="input validator w-full flex justify-between">
         <Datetime
+          dateFormat="DD MMMM YYYY"
           initialValue={new Date()}
           inputProps={{ required: { required }, className: 'w-full' }}
           timeFormat={false}
-          locale="id-ID"
+          locale="id"
           onChange={(e) => {
             // setActiveDate(getTanggal(new Date(e._d)));
             onChange(getTanggal(new Date(e._d)));
@@ -51,13 +52,14 @@ export function InputDateTime({
     <>
       <label className="input validator w-full flex justify-between ">
         <Datetime
+          dateFormat="DD MMMM YYYY"
           initialValue={new Date(defaultValue)}
           inputProps={{
             required: { required },
             className: 'w-full',
           }}
           onClose={onBlur}
-          locale="id-ID"
+          locale="id"
           onChange={(e) => {
             onChange(getTanggalJam(new Date(e._d)));
           }}
