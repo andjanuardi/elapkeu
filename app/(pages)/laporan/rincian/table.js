@@ -158,7 +158,7 @@ export default function ControlLaporan({ session }) {
         {dataTable && (
           <Table
             data={dataTable}
-            activeOpd={session <= 1 ? opd.opd : session.opd}
+            activeOpd={session.level <= 1 ? opd.opd : session.opd}
             pejabat={pejabat}
             showPenyaluran={showPenyaluran}
             tahun={session.tahun}

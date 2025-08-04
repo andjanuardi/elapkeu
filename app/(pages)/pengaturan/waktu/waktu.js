@@ -41,7 +41,11 @@ export default function Waktu() {
   return (
     <>
       {isLoading ? (
-        <div className="skeleton h-50"></div>
+        <>
+          <div className="skeleton h-50"></div>
+          <div className="skeleton h-50"></div>
+          <div className="skeleton h-50"></div>
+        </>
       ) : (
         <>
           {tahap.map((item, key) => (
@@ -69,7 +73,7 @@ export default function Waktu() {
                           new Date(dataWaktu[`batas_tahap${item}`])
                         )}
                         className="text-xl"
-                        onBlur={(e) => updateWaktu(e.currentTarget.value, item)}
+                        onBlur={(e) => updateWaktu(e._d, item)}
                       />
                     </div>
                     <button

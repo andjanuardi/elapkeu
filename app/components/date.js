@@ -9,36 +9,32 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { MdCalendarMonth } from 'react-icons/md';
 
+import Datetime from 'react-datetime';
+import 'react-datetime/css/react-datetime.css';
+
 export function InputDate({
   inputRef = null,
   onChange = () => {},
   required = false,
 }) {
   const dateInput = useRef();
-  const [activeDate, setActiveDate] = useState(getTanggal());
+  // const [activeDate, setActiveDate] = useState(getTanggal());
 
   return (
     <>
-      <label className="input validator w-full">
-        <input
-          onClick={() => dateInput.current?.showPicker()}
-          value={activeDate}
-          onChange={() => {}}
-          ref={inputRef}
-          required={required}
+      <label className="input validator w-full flex justify-between">
+        <Datetime
+          initialValue={new Date()}
+          inputProps={{ required: { required }, className: 'w-full' }}
+          timeFormat={false}
+          locale="id-ID"
+          onChange={(e) => {
+            // setActiveDate(getTanggal(new Date(e._d)));
+            onChange(getTanggal(new Date(e._d)));
+          }}
         />
         <MdCalendarMonth />
       </label>
-      <input
-        type="date"
-        className="invisible h-0"
-        ref={dateInput}
-        defaultValue={getTanggalToInput()}
-        onChange={(e) => {
-          setActiveDate(getTanggal(new Date(e.currentTarget.value)));
-          onChange(getTanggal(new Date(e.currentTarget.value)));
-        }}
-      />
     </>
   );
 }
@@ -51,35 +47,23 @@ export function InputDateTime({
   className = '',
   defaultValue = getTanggalJamToInput(),
 }) {
-  const dateInput = useRef();
-  const [activeDate, setActiveDate] = useState(
-    getTanggalJam(new Date(defaultValue)) || getTanggalJam()
-  );
   return (
     <>
-      <label className="input validator w-full ">
-        <input
-          onClick={() => dateInput.current?.showPicker()}
-          value={activeDate}
-          onChange={onChange}
-          ref={inputRef}
-          onBlur={onBlur}
-          required={required}
-          className={className}
+      <label className="input validator w-full flex justify-between ">
+        <Datetime
+          initialValue={new Date(defaultValue)}
+          inputProps={{
+            required: { required },
+            className: 'w-full',
+          }}
+          onClose={onBlur}
+          locale="id-ID"
+          onChange={(e) => {
+            onChange(getTanggalJam(new Date(e._d)));
+          }}
         />
         <MdCalendarMonth />
       </label>
-      <input
-        type="datetime-local"
-        className="invisible h-0"
-        ref={dateInput}
-        defaultValue={defaultValue}
-        onChange={(e) => {
-          setActiveDate(getTanggalJam(new Date(e.currentTarget.value)));
-          // setActiveDate(getTanggal(new Date(e.currentTarget.value)));
-          onChange(getTanggalJam(new Date(e.currentTarget.value)));
-        }}
-      />
     </>
   );
 }

@@ -7,6 +7,7 @@ import { getTanggal } from '@/lib/func';
 import { tahap } from '@/models/staticData';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { FcPrint } from 'react-icons/fc';
 import { MdReport, MdSearch } from 'react-icons/md';
 import { RiFileExcel2Fill } from 'react-icons/ri';
@@ -49,6 +50,7 @@ export default function ControlLaporan({ session }) {
         <form onSubmit={handleSubmit} className="p-4 print:hidden">
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Tahap</legend>
+
             <select
               className="select w-full validator"
               required
@@ -113,6 +115,7 @@ export default function ControlLaporan({ session }) {
           </fieldset>
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Pilih Tanggal</legend>
+
             <InputDate required={true} onChange={(e) => setTanggal(e)} />
             <p className="label italic">Masukkan tanggal cetak</p>
             <div className="validator-hint mt-0 hidden">Tidak boleh kosong</div>
@@ -151,7 +154,7 @@ export default function ControlLaporan({ session }) {
         {dataTable && (
           <Table
             data={dataTable}
-            activeOpd={session <= 1 ? opd.opd : session.opd}
+            activeOpd={session.level <= 1 ? opd.opd : session.opd}
             pejabat={pejabat}
             showPenyaluran={showPenyaluran}
             tahun={session.tahun}
