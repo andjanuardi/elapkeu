@@ -24,10 +24,10 @@ export default function Table() {
   let total_sisa = 0;
 
   return isLoading ? (
-    <div className="skeleton h-70 col-span-4"></div>
+    <div className="skeleton h-70"></div>
   ) : (
-    <div className="card  bg-base-100 card-sm shadow-sm md: col-span-2 lg:col-span-4">
-      <div className="card-body">
+    <div className="card lg:col-span-4  bg-base-100 card-sm shadow-sm ">
+      <div className="card-body overflow-auto">
         <table className="table">
           <thead>
             <tr>

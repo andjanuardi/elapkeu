@@ -16,14 +16,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="grid grid-cols-1  lg:grid-cols-4  p-4 gap-4 bg-base-200 rounded-2xl  lg:w-full   ">
+    // <div className="grid grid-cols-1  lg:grid-cols-4  p-4 gap-4 bg-base-200 rounded-2xl  lg:w-full   ">
+    <div className="grid grid-cols-1 lg:grid-cols-4   p-4 gap-4 bg-base-200 rounded-2xl  lg:w-full   ">
       {/* ROW 1 */}
       <Indikator />
       {/* ROW 2 */}
       {grafik.map((item, key) => (
         <div
           key={key}
-          className="card  bg-base-100 card-sm shadow-sm col-span-1   lg:col-span-2 h-fit "
+          className="card lg:col-span-2 bg-base-100 card-sm shadow-sm  h-fit "
         >
           <div className="card-body ">
             <h2 className="card-title place-content-center text-xl mb-2">
