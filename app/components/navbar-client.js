@@ -49,6 +49,10 @@ export function MenuButton() {
   }, []);
 
   useEffect(() => {
+    isMobile && setMenu(false);
+  }, [isMobile]);
+
+  useEffect(() => {
     const element = document.getElementById('menu');
     const elementContent = document.getElementById('content');
     if (element) {

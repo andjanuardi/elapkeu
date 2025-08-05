@@ -16,6 +16,9 @@ export default async function Navbar() {
       <div className="flex-1 px-4 place-items-center flex gap-2">
         <MenuButton />
         <span className="font-semibold hidden lg:block ">{session.opd}</span>
+        <span className="text-xl block lg:hidden font-black ">
+          {env.APP_NAME}
+        </span>
       </div>
       <div className="flex-none flex place-items-center gap-3 px-4">
         {session.tahun}
