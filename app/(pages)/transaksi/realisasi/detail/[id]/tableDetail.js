@@ -172,7 +172,6 @@ export default function TableDetail({
                     className={`hover:bg-base-300 ${
                       item?.status_data < 1 ? 'text-error' : ''
                     }`}
-                    onDoubleClick={() => setEditingRow(kode)}
                   >
                     <td>{page * selected + i + 1}</td>
                     <td>{item.kode_subkegiatan}</td>

@@ -5,9 +5,10 @@ import query from '@/lib/db';
 const table = 'ref_pejabat';
 
 export async function selectAll() {
+  const { kode_opd, level } = await getSession();
   const sql = await query({
-    query: `SELECT * FROM v_pejabat`,
-    values: [],
+    query: `SELECT * FROM v_pejabat ${level <= 1 ? '' : 'WHERE kode_opd=?'}`,
+    values: [kode_opd],
   });
   return sql;
 }
