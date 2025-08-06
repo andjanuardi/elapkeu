@@ -490,7 +490,7 @@ export function ModalCatatan({ item = [], level, updateOutput }) {
         </fieldset>
         <fieldset className="fieldset bg-base-100 border-base-300 rounded-box flex-1 border p-4">
           <legend className="fieldset-legend">Catatan Bidang Anggaran</legend>
-          {level === 4 ? (
+          {level === 5 ? (
             <div className="flex items-center gap-4">
               <textarea
                 className="textarea w-full"
